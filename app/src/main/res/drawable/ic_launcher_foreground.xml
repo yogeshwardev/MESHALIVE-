@@ -1,0 +1,36 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- mesh links -->
+    <path
+        android:strokeColor="#D32F2F"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,44 L38,64 M54,44 L70,64 M38,64 L70,64 M54,44 L54,58" />
+    <!-- signal arcs above the top node -->
+    <path
+        android:strokeColor="#D32F2F"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M46,36 A11,11 0 0,1 62,36" />
+    <path
+        android:strokeColor="#D32F2F"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M41,31 A18,18 0 0,1 67,31" />
+    <!-- nodes -->
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M48,44 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0" />
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M33,64 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M65,64 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M50,58 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+</vector>

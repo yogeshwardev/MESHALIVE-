@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MeshAlive Control Room</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bg: #0f1419; --panel: #171e26; --panel2: #1e2731; --line: #2b3643;
+    --text: #e8edf2; --muted: #93a1b0; --red: #ef4444; --orange: #f97316;
+    --amber: #eab308; --green: #22c55e; --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { display: flex; align-items: center; gap: 14px; padding: 12px 20px;
+    border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  header h1 { font-size: 20px; margin: 0; font-weight: 800; }
+  header h1 span { color: var(--red); }
+  .live { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+  .dot.on { background: var(--green); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); } 70% { box-shadow: 0 0 0 10px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+  .controls { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  input, select, textarea { background: var(--panel2); border: 1px solid var(--line); color: var(--text);
+    padding: 8px 10px; border-radius: 8px; font: inherit; }
+  #topic { width: 210px; } #pass { width: 150px; }
+  button { background: var(--panel2); color: var(--text); border: 1px solid var(--line);
+    padding: 8px 12px; border-radius: 8px; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--muted); }
+  button.primary { background: var(--red); border-color: var(--red); font-weight: 700; }
+  button.go { background: #14532d; border-color: var(--green); }
+  button.small { padding: 4px 10px; font-size: 13px; }
+  button:disabled { opacity: .45; cursor: default; }
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 12px 20px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .stat b { display: block; font-size: 28px; font-variant-numeric: tabular-nums; }
+  .stat small { color: var(--muted); font-size: 13px; }
+  main { display: grid; grid-template-columns: minmax(330px, 440px) 1fr; gap: 12px; padding: 0 20px 12px; height: 62vh; min-height: 460px; }
+  #list { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: auto; }
+  #map { border-radius: 12px; border: 1px solid var(--line); }
+  .empty { color: var(--muted); padding: 24px; line-height: 1.5; }
+  .card { padding: 12px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .card:hover, .card.sel { background: var(--panel2); }
+  .card.new { animation: flash 2.5s ease-out; }
+  .card.safe { opacity: .85; }
+  @keyframes flash { from { background: rgba(239,68,68,.35); } to { background: transparent; } }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 999px; color: #111; white-space: nowrap; }
+  .name { font-weight: 700; flex: 1; }
+  .time { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .msg { margin: 6px 0 4px; }
+  .tri { font-size: 13px; color: #fde68a; }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .status { font-size: 13px; color: #86efac; margin-top: 6px; font-weight: 600; }
+  .actions { display: flex; gap: 6px; margin-top: 8px; }
+  .bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px 20px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .panel h2 { margin: 0 0 10px; font-size: 16px; }
+  .panel form { display: grid; gap: 8px; }
+  .panel textarea { min-height: 64px; resize: vertical; }
+  #log { font: 12px/1.6 ui-monospace, Consolas, monospace; color: var(--muted); max-height: 170px; overflow: auto; }
+  #log div b { color: var(--text); font-weight: 600; }
+  .note { font-size: 12px; color: var(--muted); padding: 0 20px 16px; }
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    main, .bottom { grid-template-columns: 1fr; height: auto; }
+    #list { max-height: 50vh; } #map { height: 60vh; }
+    .controls { margin-left: 0; width: 100%; } #topic, #pass { flex: 1; width: auto; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>●</span> MeshAlive · District Control Room</h1>
+  <span class="live"><span id="dot" class="dot"></span><span id="status">Not connected</span></span>
+  <div class="controls">
+    <input id="topic" placeholder="alert channel, e.g. meshalive-ab12cd" autocomplete="off">
+    <input id="pass" type="password" placeholder="mesh passphrase" autocomplete="off" title="Signs dispatch and broadcast commands. Same passphrase as the phones.">
+    <button class="primary" id="connect">Connect</button>
+    <button id="demo" title="Loads sample SOS into this page only; nothing is sent anywhere">Demo data</button>
+  </div>
+</header>
+<section class="stats">
+  <div class="stat"><b id="sTotal">0</b><small>Need help</small></div>
+  <div class="stat"><b id="sCrit" style="color:var(--red)">0</b><small>Critical (urgency ≥ 75)</small></div>
+  <div class="stat"><b id="sDisp" style="color:var(--blue)">0</b><small>Teams dispatched</small></div>
+  <div class="stat"><b id="sSafe" style="color:var(--green)">0</b><small>Households safe</small></div>
+  <div class="stat"><b id="sPeople">0</b><small>People reported</small></div>
+</section>
+<main>
+  <div id="list"><div class="empty">Enter the gateway's alert channel (shown in the MeshAlive Inbox) and press Connect.<br><br>Every SOS that reaches a gateway or a rescue carrier with signal appears here instantly, most urgent first. Enter the mesh passphrase to dispatch teams and broadcast alerts back into the offline mesh.</div></div>
+  <div id="map"></div>
+</main>
+<section class="bottom">
+  <div class="panel">
+    <h2>📢 Broadcast to every phone in the mesh</h2>
+    <form id="alertForm">
+      <div class="row">
+        <select id="aLevel"><option>EVACUATE</option><option>DANGER</option><option selected>WARNING</option><option>INFO</option></select>
+        <input id="aTitle" style="flex:1" placeholder="Title, e.g. Evacuate to Govt School, Velachery" required>
+      </div>
+      <textarea id="aText" placeholder="Message (any language), e.g. நீர் மட்டம் உயர்கிறது. உடனே பள்ளிக்குச் செல்லவும்." required></textarea>
+      <div class="row"><button class="primary" id="aSend" type="submit">Send alert into the mesh</button>
+        <span class="time">Signed with the passphrase · gateways relay it phone to phone</span></div>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>Activity</h2>
+    <div id="log"><div>Waiting…</div></div>
+  </div>
+</section>
+<p class="note">Live channel: ntfy.sh (free, no account). Map © OpenStreetMap contributors. Urgency is computed on the victim's phone from the situation report. Commands are HMAC-SHA256 signed; phones reject anything not signed with the mesh passphrase.</p>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const alerts = new Map();      // msgId -> SOS / SAFE report
+const markers = new Map();     // msgId -> leaflet marker
+const statusOf = new Map();    // msgId -> {status, note, notified}
+let sources = [], selected = null, audio = null, topic = "", demoMode = false;
+
+const map = L.map("map").setView([11.0, 78.6], 7);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map);
+setTimeout(() => map.invalidateSize(), 250);
+window.addEventListener("resize", () => map.invalidateSize());
+
+const band = (u) => u >= 75 ? "CRITICAL" : u >= 50 ? "HIGH" : u >= 30 ? "MEDIUM" : "LOW";
+const color = (a) => a.type === "SAFE" ? "#22c55e" : a.urgency >= 75 ? "#ef4444" : a.urgency >= 50 ? "#f97316" : a.urgency >= 30 ? "#eab308" : "#38bdf8";
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const hhmm = (t) => t ? new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "";
+const peopleIn = (a) => { const m = /(\d+)\s+(person|people)/.exec(a.triage || ""); return m ? +m[1] : 1; };
+
+function log(html) {
+  const el = $("log");
+  if (el.textContent === "Waiting…") el.innerHTML = "";
+  el.insertAdjacentHTML("afterbegin", `<div>${hhmm(Date.now())} · ${html}</div>`);
+}
+
+function beep(critical) {
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    for (let i = 0; i < (critical ? 3 : 1); i++) {
+      const o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime + i * 0.25;
+      o.frequency.value = critical ? 880 : 660; o.connect(g); g.connect(audio.destination);
+      g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2); o.start(t); o.stop(t + 0.22);
+    }
+  } catch (e) { /* audio needs a user gesture first */ }
+}
+
+function add(a, isNew) {
+  if (!a || !a.msgId || alerts.has(a.msgId)) return;
+  a.urgency = +a.urgency || 0;
+  alerts.set(a.msgId, a);
+  if (a.lat != null && a.lng != null) {
+    const m = L.circleMarker([a.lat, a.lng], {
+      radius: a.type === "SAFE" ? 7 : 8 + a.urgency / 10, color: "#fff", weight: 2, fillColor: color(a), fillOpacity: 0.9,
+    }).addTo(map).bindPopup(() =>
+      `<b>${esc(a.type)} · ${esc(a.from)}</b><br>${esc(a.message)}<br><i>${esc(a.triage)}</i><br>` +
+      (a.type === "SAFE" ? "" : `Urgency <b>${a.urgency}</b> (${band(a.urgency)})<br>`) +
+      `${a.hops} hop(s): ${esc(a.path)}<br><a href="https://www.google.com/maps/search/?api=1&query=${a.lat},${a.lng}" target="_blank" rel="noopener">Open in Google Maps</a>`);
+    m.on("click", () => select(a.msgId));
+    markers.set(a.msgId, m);
+  }
+  if (isNew) {
+    if (a.type !== "SAFE") beep(a.urgency >= 75);
+    log(a.type === "SAFE" ? `✅ <b>${esc(a.from)}</b> checked in safe` :
+      `🆘 <b>${esc(a.from)}</b> · ${band(a.urgency)} ${a.urgency} · ${a.hops} hop(s) offline`);
+    if (a.lat != null) map.flyTo([a.lat, a.lng], Math.max(map.getZoom(), 13), { duration: 1.2 });
+  }
+  render(isNew ? a.msgId : null);
+  if (!isNew) fitAll();
+}
+
+function fitAll() {
+  map.invalidateSize();
+  const pts = [...alerts.values()].filter((x) => x.lat != null).map((x) => [x.lat, x.lng]);
+  if (pts.length) map.fitBounds(pts, { padding: [40, 40], maxZoom: 14 });
+}
+
+function render(newId) {
+  const all = [...alerts.values()];
+  const need = all.filter((a) => a.type !== "SAFE");
+  const list = [...need.sort((a, b) => b.urgency - a.urgency || b.receivedAt - a.receivedAt),
+                ...all.filter((a) => a.type === "SAFE").sort((a, b) => b.receivedAt - a.receivedAt)];
+  $("sTotal").textContent = need.filter((a) => statusOf.get(a.msgId)?.status !== "rescued").length;
+  $("sCrit").textContent = need.filter((a) => a.urgency >= 75 && statusOf.get(a.msgId)?.status !== "rescued").length;
+  $("sDisp").textContent = [...statusOf.values()].filter((s) => s.status === "dispatch").length;
+  $("sSafe").textContent = all.length - need.length;
+  $("sPeople").textContent = need.reduce((s, a) => s + peopleIn(a), 0);
+  if (!list.length) return;
+  const canAct = !!$("pass").value && (topic || demoMode);
+  $("list").innerHTML = list.map((a) => {
+    const st = statusOf.get(a.msgId) || {};
+    const safe = a.type === "SAFE";
+    return `
+    <div class="card ${safe ? "safe" : ""} ${a.msgId === newId ? "new" : ""} ${a.msgId === selected ? "sel" : ""}" data-id="${esc(a.msgId)}">
+      <div class="row">
+        <span class="badge" style="background:${color(a)}">${safe ? "SAFE" : band(a.urgency) + " " + a.urgency}</span>
+        <span class="name">${safe ? "" : esc(a.type) + " · "}${esc(a.from)}</span>
+        <span class="time">${hhmm(a.receivedAt)}</span>
+      </div>
+      <div class="msg">${esc(a.message)}</div>
+      ${a.triage ? `<div class="tri">👥 ${esc(a.triage)}</div>` : ""}
+      <div class="meta">${a.lat != null ? `📍 ${(+a.lat).toFixed(5)}, ${(+a.lng).toFixed(5)}` : "📍 no GPS"} · ${a.hops} hop(s) offline · via ${esc(a.gateway)}</div>
+      ${st.status ? `<div class="status">${st.status === "rescued" ? "✅ Rescued" : "🚤 Team dispatched"}${st.note ? " — " + esc(st.note) : ""}${st.notified ? " · ✓ victim's phone confirmed" : st.status ? " · sending through the mesh…" : ""}</div>` : ""}
+      ${safe ? "" : `<div class="actions">
+        <button class="small go" data-act="dispatch" ${!canAct || st.status ? "disabled" : ""}>🚤 Dispatch team</button>
+        <button class="small" data-act="rescued" ${!canAct || st.status === "rescued" ? "disabled" : ""}>✅ Mark rescued</button>
+      </div>`}
+    </div>`;
+  }).join("");
+  document.querySelectorAll(".card").forEach((el) => el.onclick = (e) => {
+    const act = e.target.dataset?.act;
+    if (act) { e.stopPropagation(); command(act, el.dataset.id); } else select(el.dataset.id);
+  });
+}
+
+function select(id) {
+  selected = id;
+  const m = markers.get(id);
+  if (m) { map.flyTo(m.getLatLng(), 15, { duration: 0.8 }); m.openPopup(); }
+  render(null);
+}
+
+// ---------- signed commands (HMAC-SHA256 with the mesh passphrase; must match ControlRoom.kt) ----------
+// Self-contained SHA-256 so signing works from file://, plain-HTTP LANs and old browsers alike.
+const SHA = (() => {
+  const primes = []; for (let n = 2; primes.length < 64; n++) if (primes.every((p) => n % p)) primes.push(n);
+  const frac = (x) => ((x - Math.floor(x)) * 0x100000000) >>> 0;
+  const K = primes.map((p) => frac(Math.cbrt(p))), H0 = primes.slice(0, 8).map((p) => frac(Math.sqrt(p)));
+  const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  return (msg) => {
+    const len = msg.length, withPad = ((len + 9 + 63) >> 6) << 6, b = new Uint8Array(withPad);
+    b.set(msg); b[len] = 0x80;
+    const dv = new DataView(b.buffer); dv.setUint32(withPad - 4, (len * 8) >>> 0); dv.setUint32(withPad - 8, Math.floor(len / 0x20000000));
+    const H = H0.slice(), w = new Uint32Array(64);
+    for (let o = 0; o < withPad; o += 64) {
+      for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+      for (let i = 16; i < 64; i++) {
+        const s0 = rotr(w[i - 15], 7) ^ rotr(w[i - 15], 18) ^ (w[i - 15] >>> 3);
+        const s1 = rotr(w[i - 2], 17) ^ rotr(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+      }
+      let [a, bb, c, d, e, f, g, h] = H;
+      for (let i = 0; i < 64; i++) {
+        const t1 = (h + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+        const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) >>> 0;
+        h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = bb; bb = a; a = (t1 + t2) >>> 0;
+      }
+      [a, bb, c, d, e, f, g, h].forEach((v, i) => (H[i] = (H[i] + v) >>> 0));
+    }
+    const out = new Uint8Array(32); const ov = new DataView(out.buffer); H.forEach((v, i) => ov.setUint32(i * 4, v)); return out;
+  };
+})();
+
+function hmacHex(keyText, dataText) {
+  const enc = new TextEncoder();
+  let key = enc.encode(keyText); if (key.length > 64) key = SHA(key);
+  const k = new Uint8Array(64); k.set(key);
+  const ipad = k.map((x) => x ^ 0x36), opad = k.map((x) => x ^ 0x5c), data = enc.encode(dataText);
+  const inner = new Uint8Array(64 + data.length); inner.set(ipad); inner.set(data, 64);
+  const outer = new Uint8Array(96); outer.set(opad); outer.set(SHA(inner), 64);
+  return [...SHA(outer)].map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+async function sign(c) {
+  return hmacHex($("pass").value, [c.cmd, c.msgId, c.note, c.title, c.text, c.level, String(c.ts)].join("|"));
+}
+
+async function publish(c) {
+  c = { cmd: "", msgId: "", note: "", title: "", text: "", level: "WARNING", ts: Date.now(), ...c };
+  c.sig = await sign(c);
+  if (demoMode) { applyCommand(c, true); return true; }
+  const r = await fetch("https://ntfy.sh/", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic: topic + "-cmd", message: JSON.stringify(c) }) });
+  if (!r.ok) { log(`⚠ Could not send command (HTTP ${r.status})`); return false; }
+  return true;
+}
+
+async function command(act, msgId) {
+  const a = alerts.get(msgId);
+  let note = "";
+  if (act === "dispatch") {
+    note = prompt(`Message to ${a.from} (sent back through the offline mesh):`, "Boat team on the way. Stay on the roof, wave a cloth.");
+    if (note === null) return;
+  }
+  if (await publish({ cmd: act, msgId, note })) log(`${act === "dispatch" ? "🚤 Dispatch" : "✅ Rescued"} sent for <b>${esc(a.from)}</b>`);
+}
+
+function applyCommand(c, local) {
+  if (c.cmd === "dispatch" || c.cmd === "rescued") {
+    statusOf.set(c.msgId, { ...(statusOf.get(c.msgId) || {}), status: c.cmd, note: c.note });
+    if (local) setTimeout(() => { statusOf.get(c.msgId).notified = true; render(null); log("✓ (demo) victim's phone confirmed"); }, 2500);
+  } else if (c.cmd === "alert") {
+    log(`📢 <b>${esc(c.level)}</b> broadcast: ${esc(c.title)}`);
+  }
+  render(null);
+}
+
+$("alertForm").onsubmit = async (e) => {
+  e.preventDefault();
+  if (!$("pass").value) { alert("Enter the mesh passphrase first: phones only accept signed alerts."); return; }
+  const ok = await publish({ cmd: "alert", level: $("aLevel").value, title: $("aTitle").value.trim(), text: $("aText").value.trim() });
+  if (ok) { if (!demoMode) log(`📢 Alert queued for gateways: <b>${esc($("aTitle").value)}</b>`); $("aTitle").value = ""; $("aText").value = ""; }
+};
+
+// ---------- live channels ----------
+function listen(path, onMsg) {
+  const s = new EventSource(`https://ntfy.sh/${path}/sse?since=all`);
+  let initial = true; setTimeout(() => (initial = false), 3000);
+  s.onopen = () => { $("dot").classList.add("on"); $("status").textContent = `Live · ${topic}`; };
+  s.onerror = () => { $("dot").classList.remove("on"); $("status").textContent = "Reconnecting…"; };
+  s.onmessage = (ev) => {
+    try { const o = JSON.parse(ev.data); if (o.event === "message") onMsg(JSON.parse(o.message), !initial); } catch (e) { /* not ours */ }
+  };
+  sources.push(s);
+}
+
+function connect() {
+  topic = $("topic").value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  if (!topic) return;
+  demoMode = false;
+  $("topic").value = topic;
+  history.replaceState(null, "", "?topic=" + encodeURIComponent(topic));
+  sources.forEach((s) => s.close()); sources = [];
+  $("status").textContent = "Connecting…";
+  listen(topic + "-data", (m, isNew) => {
+    if (m.kind === "notified") {
+      statusOf.set(m.msgId, { ...(statusOf.get(m.msgId) || {}), notified: true });
+      if (isNew) log(`✓ Victim's phone confirmed the update (${m.hops} hop(s), ${m.latencyMs} ms)`);
+      render(null);
+    } else add(m, isNew);
+  });
+  listen(topic + "-cmd", (c) => applyCommand(c, false));
+  log(`Connected to channel <b>${esc(topic)}</b>`);
+}
+
+function demo() {
+  demoMode = true;
+  const now = Date.now(), base = { type: "SOS", gateway: "Gateway (demo)", sentAt: now };
+  [
+    { from: "Kumar", message: "நாங்கள் சிக்கியுள்ளோம், வெளியேற முடியவில்லை", triage: "4 people, trapped, elderly, children, water at chest", urgency: 100, lat: 13.0336, lng: 80.2700, hops: 3, path: "Kumar → Priya → Boat-7 → Gateway" },
+    { from: "Anitha", message: "Water rising fast, grandmother cannot walk", triage: "3 people, elderly, disabled, water at waist", urgency: 81, lat: 13.0500, lng: 80.2416, hops: 2, path: "Anitha → Ravi → Gateway" },
+    { from: "Selvam", type: "MEDICAL", message: "Medical help needed urgently", triage: "1 person, injured", urgency: 55, lat: 13.0067, lng: 80.2206, hops: 4, path: "Selvam → … → Gateway" },
+    { from: "Farida", message: "Need drinking water and food", triage: "6 people, children", urgency: 38, lat: 12.9840, lng: 80.2590, hops: 1, path: "Farida → Gateway" },
+    { from: "Joseph", type: "SAFE", message: "We are safe", triage: "5 people", urgency: 0, lat: 13.0210, lng: 80.2330, hops: 2, path: "Joseph → Meena → Gateway" },
+  ].forEach((a, i) => add({ ...base, ...a, msgId: "demo-" + i, receivedAt: now - i * 60000 }, false));
+  if (!$("pass").value) $("pass").value = "demo";
+  $("status").textContent = "Demo data (local only, nothing is sent)";
+  render(null);
+}
+
+$("connect").onclick = connect;
+$("topic").onkeydown = (e) => { if (e.key === "Enter") connect(); };
+$("pass").oninput = () => render(null);
+$("demo").onclick = demo;
+const params = new URLSearchParams(location.search);
+const fromUrl = params.get("topic");
+if (fromUrl) { $("topic").value = fromUrl; connect(); }
+else if (params.get("demo") === "1") demo();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MeshAlive</string>
+    <color name="ic_launcher_background">#FFFFFF</color>
+
+    <style name="Theme.MeshAlive" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#FFF6F7FB</item>
+        <item name="android:windowBackground">#FFF6F7FB</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
