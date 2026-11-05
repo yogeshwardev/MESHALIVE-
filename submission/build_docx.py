@@ -180,9 +180,9 @@ STAGE = ("What stage is your solution at?", ["Idea", "Prototype", "Working Proto
 EVIDENCE = ("What evidence do you have?", ["Prototype", "Pilot", "Testing", "Survey", "Other"], {"Prototype", "Testing"})
 ATTACH = [
     ("Concept document *", "MeshAlive_Concept_Document.pdf", "Required. PDF only, max 15 MB."),
-    ("Other files / documents", "MeshAlive_Pitch_Deck.pptx and MeshAlive_App_Screenshots.pdf",
+    ("Other files / documents", "MeshAlive_Presentation.pdf (21 slides), MeshAlive_Presentation_6_Slides.pdf and MeshAlive_App_Screenshots.pdf",
      "Optional. PDF, Word, PowerPoint, Excel or images, up to 50 MB in total. (The APK cannot be uploaded here; it is linked on the website.)"),
-    ("Video link", "[Paste the YouTube / Drive link of the demo video]", "Optional. Or upload a video file (max 100 MB)."),
+    ("Video", "Upload MeshAlive_Prototype_Video.mp4 (17.5 MB, 2 min 43 s), or give the link https://meshalive.benzo.co.in/#demo", "Optional. Upload a video file (max 100 MB) or paste a link."),
     ("Website (mention in notes)", "https://meshalive.benzo.co.in", "Live demo of the control-room dashboard and app download."),
     ("Source code (mention in notes)", "https://github.com/yogeshwardev/MESHALIVE-", "Public repository."),
 ]
