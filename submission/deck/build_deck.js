@@ -6,9 +6,9 @@ const M = (f) => path.resolve(__dirname, "../../website/assets/mock", f);
 const OUT = path.resolve(__dirname, "../MeshAlive_Pitch_Deck.pptx");
 
 const C = {
-  bg: "070B14", bg2: "0E1526", card: "121A2B", line: "243049",
-  text: "E8EEF7", muted: "9AA8BC", coral: "FF4D5E", teal: "2DE2C8", violet: "8B7CFF",
-  amber: "FBBF24", green: "34D399", blue: "60A5FA",
+  bg: "000000", bg2: "0A0A0A", card: "0D0D0D", line: "262626",
+  text: "EDEDED", muted: "9A9A9A", coral: "FF3B3B", teal: "EDEDED", violet: "BDBDBD",
+  amber: "F5A524", green: "22C55E", blue: "8F8F8F",
 };
 const HEAD = "Arial";
 const BODY = "Calibri";
@@ -27,13 +27,13 @@ function phone(slide, file, x, y, h) {
 function base(kicker, title, opts = {}) {
   const s = pres.addSlide();
   s.background = { color: opts.bg || C.bg };
-  if (opts.glow !== false) {
+  if (opts.glow === true) {
     s.addShape(pres.shapes.OVAL, { x: 9.6, y: -2.6, w: 6, h: 5, fill: { color: C.violet, transparency: 86 }, line: { type: "none" } });
     s.addShape(pres.shapes.OVAL, { x: -2.4, y: 5.2, w: 5.5, h: 4.5, fill: { color: C.teal, transparency: 90 }, line: { type: "none" } });
   }
-  if (kicker) s.addText(kicker.toUpperCase(), { x: 0.6, y: 0.42, w: 9, h: 0.35, fontFace: BODY, fontSize: 13, bold: true, color: C.teal, charSpacing: 4, margin: 0, isTextBox: true });
+  if (kicker) s.addText(kicker.toUpperCase(), { x: 0.6, y: 0.42, w: 9, h: 0.35, fontFace: BODY, fontSize: 12, bold: true, color: "8F8F8F", charSpacing: 4, margin: 0, isTextBox: true });
   if (title) s.addText(title, { x: 0.6, y: 0.78, w: 12.1, h: 0.95, fontFace: HEAD, fontSize: 32, bold: true, color: "FFFFFF", margin: 0, isTextBox: true, valign: "top" });
-  s.addText("MeshAlive · SevaFirst Innovation Challenge", { x: 0.6, y: 7.05, w: 6, h: 0.3, fontFace: BODY, fontSize: 10, color: "64748B", margin: 0, isTextBox: true });
+  s.addText("MeshAlive · SevaFirst Innovation Challenge", { x: 0.6, y: 7.05, w: 6, h: 0.3, fontFace: BODY, fontSize: 10, color: "5C5C5C", margin: 0, isTextBox: true });
   return s;
 }
 
@@ -50,7 +50,7 @@ function card(s, x, y, w, h, title, body, accent = C.coral) {
   s.addText("MeshAlive", { x: 0.6, y: 0.6, w: 6, h: 0.5, fontFace: HEAD, fontSize: 20, bold: true, color: C.coral, margin: 0, isTextBox: true });
   s.addText([
     { text: "Help reaches you,", options: { color: "FFFFFF", breakLine: true } },
-    { text: "even when the network doesn’t.", options: { color: "FF8577" } },
+    { text: "even when the network doesn’t.", options: { color: "8F8F8F" } },
   ], { x: 0.6, y: 1.5, w: 6.6, h: 2.4, fontFace: HEAD, fontSize: 40, bold: true, margin: 0, isTextBox: true, valign: "top" });
   s.addText("An offline disaster-response network. When cyclones and floods take down mobile towers, SOS messages travel phone to phone and through rescue boats to the district control room, and help comes back the same way.",
     { x: 0.6, y: 4.1, w: 6.2, h: 1.4, fontFace: BODY, fontSize: 16, color: C.muted, margin: 0, isTextBox: true, valign: "top" });
@@ -75,7 +75,7 @@ function card(s, x, y, w, h, title, body, accent = C.coral) {
   const s = base("The solution", "A complete rescue loop on phones people already own");
   const steps = [
     ["Ask for help", "One-tap SOS with GPS and a situation report, scored 0–100 for urgency.", C.coral],
-    ["Phones relay", "Bluetooth and Wi-Fi mesh. Battery-aware routing; most urgent first.", "B06AF7"],
+    ["Phones relay", "Bluetooth and Wi-Fi mesh. Battery-aware routing; most urgent first.", "EDEDED"],
     ["Rescuers carry", "Boats and NDRF teams carry stuck SOS out of dead zones.", C.violet],
     ["Control room sees", "The first phone with signal uploads to a live, urgency-sorted map.", C.teal],
     ["Help comes back", "Dispatch and evacuation alerts reach phones with no signal.", C.green],
@@ -122,10 +122,10 @@ function card(s, x, y, w, h, title, body, accent = C.coral) {
 // 6 ── Different
 {
   const s = base("Why it’s different", "A rescue system, not a chat app");
-  const hdr = (t, us) => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: us ? "B42335" : "1A2438" }, fontFace: HEAD, fontSize: 14 } });
+  const hdr = (t, us) => ({ text: t, options: { bold: true, color: "FFFFFF", fill: { color: us ? "1F1F1F" : "0D0D0D" }, fontFace: HEAD, fontSize: 14 } });
   const row = (a, b, c, d) => [
     { text: a, options: { color: C.text, bold: true } }, { text: b, options: { color: C.muted } }, { text: c, options: { color: C.muted } },
-    { text: d, options: { color: "FFFFFF", bold: true, fill: { color: "2A1620" } } }];
+    { text: d, options: { color: "FFFFFF", bold: true, fill: { color: "141414" } } }];
   s.addTable([
     [hdr(""), hdr("Chat apps (Bridgefy, Briar)"), hdr("LoRa radios (Meshtastic, goTenna)"), hdr("MeshAlive", true)],
     row("Reaches rescuers", "No", "No", "Live district dashboard"),
@@ -172,7 +172,7 @@ function card(s, x, y, w, h, title, body, accent = C.coral) {
   const opts = { x: 0.6, y: 3.85, w: 12.1, h: 2.9, barDir: "col", barGrouping: "clustered", chartColors: [C.coral, C.blue, C.green],
     showTitle: true, title: "Radio transmissions per 20 SOS (log scale not used)", titleColor: "FFFFFF", titleFontFace: "+mn-lt", titleFontSize: 13,
     showValue: true, dataLabelPosition: "outEnd", dataLabelColor: "FFFFFF", dataLabelFontSize: 12, dataLabelFormatCode: "#,##0",
-    catAxisLabelColor: "CBD5E1", valAxisLabelColor: "94A3B8", catAxisLabelFontSize: 12, valAxisLabelFontSize: 11,
+    catAxisLabelColor: "D4D4D4", valAxisLabelColor: "8F8F8F", catAxisLabelFontSize: 12, valAxisLabelFontSize: 11,
     valGridLine: { color: "243049", size: 0.5 }, catGridLine: { style: "none" }, showLegend: false, valAxisHidden: true };
   s.addChart(pres.charts.BAR, [{ name: "Transmissions", labels: ["Flooding", "BFS", "Battery-aware Dijkstra"], values: [14533, 88, 99] }],
     { ...opts, title: "Radio transmissions for 20 SOS on the same 200-phone network", chartColors: [C.coral, C.blue, C.green], invertedColors: [C.coral, C.blue, C.green] });
