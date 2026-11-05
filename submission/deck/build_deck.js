@@ -8,7 +8,7 @@ const OUT = path.resolve(__dirname, "../MeshAlive_Pitch_Deck.pptx");
 const C = {
   bg: "000000", bg2: "0A0A0A", card: "0D0D0D", line: "262626",
   text: "EDEDED", muted: "9A9A9A", coral: "FF3B3B", teal: "EDEDED", violet: "BDBDBD",
-  amber: "F5A524", green: "22C55E", blue: "8F8F8F",
+  amber: "8F8F8F", green: "FFFFFF", blue: "5C5C5C",
 };
 const HEAD = "Arial";
 const BODY = "Calibri";
@@ -33,7 +33,9 @@ function base(kicker, title, opts = {}) {
   }
   if (kicker) s.addText(kicker.toUpperCase(), { x: 0.6, y: 0.42, w: 9, h: 0.35, fontFace: BODY, fontSize: 12, bold: true, color: "8F8F8F", charSpacing: 4, margin: 0, isTextBox: true });
   if (title) s.addText(title, { x: 0.6, y: 0.78, w: 12.1, h: 0.95, fontFace: HEAD, fontSize: 32, bold: true, color: "FFFFFF", margin: 0, isTextBox: true, valign: "top" });
-  s.addText("MeshAlive · SevaFirst Innovation Challenge", { x: 0.6, y: 7.05, w: 6, h: 0.3, fontFace: BODY, fontSize: 10, color: "5C5C5C", margin: 0, isTextBox: true });
+  s.addShape(pres.shapes.LINE, { x: 0.6, y: 6.95, w: 12.13, h: 0, line: { color: "1F1F1F", width: 0.75 } });
+  s.addText("MeshAlive  ·  SevaFirst Innovation Challenge 2026", { x: 0.6, y: 7.05, w: 6, h: 0.3, fontFace: BODY, fontSize: 10, color: "5C5C5C", margin: 0, isTextBox: true });
+  s.slideNumber = { x: 12.23, y: 7.05, w: 0.5, h: 0.3, fontFace: BODY, fontSize: 10, color: "5C5C5C", align: "right" };
   return s;
 }
 

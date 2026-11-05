@@ -3,267 +3,371 @@
 <head>
 <meta charset="utf-8">
 <title>MeshAlive — Concept Document</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   @page { size: A4; margin: 0; }
-  :root { --ink:#0A0A0A; --muted:#525252; --line:#E5E5E5; --night:#000000; --teal:#404040; --coral:#E5262B; --violet:#262626; --amber:#F59E0B; --green:#16A34A; --paper:#F5F5F5; }
+  :root { --ink:#111111; --body:#2B2B2B; --muted:#5F5F5F; --soft:#8A8A8A; --line:#DEDEDE; --fill:#F4F4F4; --accent:#D7262B; }
   * { box-sizing: border-box; }
-  body { margin:0; font-family:Inter, Arial, sans-serif; color:var(--ink); font-size:10.5pt; line-height:1.5; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  h1,h2,h3 { font-family:Sora, Arial, sans-serif; margin:0; line-height:1.15; }
-  .page { width:210mm; height:297mm; padding:16mm 16mm 14mm; position:relative; overflow:hidden; page-break-after:always; background:#fff; }
+  body { margin:0; font-family:Inter, Arial, sans-serif; color:var(--body); font-size:9.8pt; line-height:1.55; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  h1,h2,h3 { color:var(--ink); margin:0; line-height:1.2; letter-spacing:-0.01em; }
+  b, strong { color:var(--ink); font-weight:600; }
+  p { margin:0 0 7px; }
+  .page { width:210mm; height:297mm; padding:24mm 20mm 20mm; position:relative; overflow:hidden; page-break-after:always; background:#fff; }
   .page:last-child { page-break-after:auto; }
-  .kicker { font-size:8pt; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--coral); }
-  h2 { font-size:22pt; margin:4px 0 10px; }
-  .lead { color:var(--muted); font-size:11pt; margin:0 0 14px; }
-  .foot { position:absolute; left:16mm; right:16mm; bottom:8mm; display:flex; justify-content:space-between; font-size:7.5pt; color:#8F8F8F; border-top:1px solid var(--line); padding-top:5px; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-  .card { border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:#fff; }
-  .card h3 { font-size:11.5pt; margin:6px 0 4px; }
-  .card p { margin:0; color:var(--muted); font-size:9.5pt; }
-  .tag { display:inline-block; font-size:7.5pt; font-weight:700; padding:2px 8px; border-radius:99px; }
-  ul { margin:6px 0 0; padding-left:16px; } li { margin:3px 0; }
-  table { width:100%; border-collapse:collapse; font-size:9pt; }
-  th { background:var(--night); color:#fff; text-align:left; padding:7px 8px; font-weight:600; }
-  td { padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
-  td.us, th.us { background:#FFF1F3; font-weight:600; }
-  th.us { background:var(--coral); color:#fff; }
-  .num { font-family:Sora; font-weight:800; font-size:24pt; line-height:1; }
-  img.mock { width:100%; height:auto; display:block; }
+
+  /* running header / footer */
+  .hdr { position:absolute; top:10mm; left:20mm; right:20mm; display:flex; justify-content:space-between; font-size:7.5pt; color:var(--soft); border-bottom:0.6pt solid var(--line); padding-bottom:3mm; }
+  .hdr b { color:var(--ink); font-weight:600; }
+  .ftr { position:absolute; bottom:9mm; left:20mm; right:20mm; display:flex; justify-content:space-between; font-size:7.5pt; color:var(--soft); }
+
+  /* section headings */
+  .sec { display:flex; align-items:baseline; gap:4mm; border-bottom:1.2pt solid var(--ink); padding-bottom:2.5mm; margin:0 0 4.5mm; }
+  .sec .n { font-size:10pt; font-weight:700; color:var(--accent); min-width:7mm; } .sec .n:empty { display:none; }
+  .sec h2 { font-size:17pt; font-weight:700; }
+  .sec.next { margin-top:8mm; }
+  h3 { font-size:10.5pt; font-weight:700; margin:5mm 0 2mm; }
+  h3:first-child { margin-top:0; }
+  .lead { font-size:10.8pt; color:var(--body); margin-bottom:4mm; }
+
+  ul { margin:1mm 0 0; padding-left:4.5mm; } li { margin:1.2mm 0; } li::marker { color:var(--soft); }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:7mm; }
+  .cols3 { display:grid; grid-template-columns:repeat(3,1fr); gap:6mm; }
+  .box { border:0.6pt solid var(--line); background:var(--fill); padding:4mm 5mm; border-radius:1.5mm; }
+  .statement { border-left:1.6mm solid var(--accent); background:var(--fill); padding:4mm 5mm; margin-top:5mm; font-size:10.3pt; }
+  .statement b { display:block; font-size:8pt; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:1.5mm; }
+
+  table { width:100%; border-collapse:collapse; font-size:8.8pt; margin:1mm 0; }
+  th { text-align:left; font-weight:600; color:var(--ink); border-bottom:1pt solid var(--ink); padding:2.2mm 2.5mm; vertical-align:bottom; }
+  td { padding:2.2mm 2.5mm; border-bottom:0.5pt solid var(--line); vertical-align:top; }
+  td:first-child { color:var(--ink); font-weight:500; }
+  .hl { background:#F8F8F8; color:var(--ink); font-weight:600; }
+  th.hl { background:#F8F8F8; }
+  .num { text-align:right; font-variant-numeric:tabular-nums; }
+
+  figure { margin:4mm 0 0; }
+  figure img { width:100%; display:block; }
+  figcaption { font-size:8pt; color:var(--muted); margin-top:2mm; text-align:center; }
+  figcaption b { color:var(--ink); }
+  .phones { display:grid; grid-template-columns:repeat(3,1fr); gap:8mm; align-items:end; width:72%; margin:0 auto; }
+  .phones img { width:100%; display:block; }
+  .phones span { display:block; text-align:center; font-size:7.8pt; color:var(--muted); margin-top:1mm; }
+
+  .kpis { display:grid; grid-template-columns:repeat(4,1fr); border:0.6pt solid var(--line); border-radius:1.5mm; margin:1mm 0 5mm; }
+  .kpis div { padding:4mm; }
+  .kpis div + div { border-left:0.6pt solid var(--line); }
+  .kpis b { display:block; font-size:19pt; font-weight:700; letter-spacing:-0.02em; line-height:1.1; }
+  .kpis span { font-size:8pt; color:var(--muted); }
+
+  .flow { display:grid; grid-template-columns:repeat(5,1fr); border:0.6pt solid var(--line); border-radius:1.5mm; margin:1mm 0 5mm; }
+  .flow div { padding:3.5mm; font-size:8.4pt; color:var(--muted); }
+  .flow div + div { border-left:0.6pt solid var(--line); }
+  .flow i { display:block; font-style:normal; font-size:7.5pt; font-weight:700; color:var(--accent); margin-bottom:1mm; }
+  .flow b { display:block; font-size:9.2pt; margin-bottom:1mm; }
 
   /* cover */
-  .cover { background: var(--night); color:#fff; padding:20mm 18mm; }
-  .cover .brand { display:flex; align-items:center; gap:10px; font-family:Sora; font-weight:800; font-size:14pt; }
-  .cover .brand i { width:30px; height:30px; border-radius:9px; background:var(--coral); display:grid; place-items:center; }
-  .cover h1 { font-size:36pt; margin:12mm 0 5mm; font-weight:800; }
-  .cover h1 em { font-style:normal; color:#8F8F8F; }
-  .cover .sub { font-size:12.5pt; color:#A3A3A3; max-width:150mm; }
-  .cover .meta { display:flex; gap:8px; flex-wrap:wrap; margin-top:7mm; }
-  .cover .meta span { border:1px solid rgba(255,255,255,.25); border-radius:99px; padding:4px 10px; font-size:8.5pt; color:#E5E5E5; }
-  .cover .hero { position:absolute; left:20mm; width:170mm; bottom:13mm; }
-  .cover .foot { color:#737373; border-color:rgba(255,255,255,.12); }
+  .cover { background:#000; color:#fff; padding:22mm 20mm; }
+  .cover .brand { display:flex; align-items:center; gap:3mm; font-weight:700; font-size:13pt; color:#fff; }
+  .cover .doc { margin-top:30mm; font-size:9pt; letter-spacing:.16em; text-transform:uppercase; color:#9A9A9A; }
+  .cover h1 { color:#fff; font-size:40pt; font-weight:800; letter-spacing:-0.035em; margin:4mm 0 4mm; }
+  .cover .tag { font-size:16pt; font-weight:500; color:#BDBDBD; letter-spacing:-0.01em; max-width:165mm; line-height:1.35; }
+  .cover table { margin-top:14mm; width:104mm; font-size:9pt; }
+  .cover td { border-bottom:0.5pt solid #2A2A2A; padding:2.4mm 0; color:#EDEDED; font-weight:400; }
+  .cover td:first-child { color:#8A8A8A; width:36mm; font-weight:400; }
+  .cover .art { position:absolute; right:14mm; bottom:20mm; width:78mm; }
+  .cover .ftr { color:#6B6B6B; }
 
-  /* loop */
-  .loop { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin:6px 0 12px; }
-  .loop div { border-radius:12px; padding:10px; color:#fff; font-size:8.5pt; min-height:30mm; }
-  .loop b { display:block; font-family:Sora; font-size:10pt; margin-bottom:4px; }
-  .arch { display:grid; gap:6px; }
-  .arch div { border:1px solid var(--line); border-radius:10px; padding:8px 12px; display:grid; grid-template-columns:42mm 1fr; gap:8px; font-size:9pt; }
-  .arch b { font-family:Sora; font-size:9.5pt; }
+  /* contents */
+  .toc { margin-top:2mm; }
+  .toc div { display:flex; gap:4mm; padding:2.4mm 0; border-bottom:0.5pt solid var(--line); font-size:10pt; }
+  .toc div span:first-child { color:var(--accent); font-weight:700; width:6mm; }
+  .toc div span:nth-child(2) { flex:1; color:var(--ink); }
+  .toc div span:last-child { color:var(--soft); }
 </style>
 </head>
 <body>
 
-<!-- 1. COVER -->
+<!-- COVER -->
 <section class="page cover">
-  <div class="brand"><i><svg width="18" height="18" viewBox="0 0 64 64"><path d="M32 18 L18 42 M32 18 L46 42 M18 42 L46 42" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="32" cy="18" r="7" fill="white"/><circle cx="18" cy="42" r="6" fill="white"/><circle cx="46" cy="42" r="6" fill="white"/></svg></i>MeshAlive</div>
-  <h1>Help reaches you,<br><em>even when the network doesn’t.</em></h1>
-  <p class="sub">An offline disaster-response network: when cyclones and floods take down mobile towers, SOS messages travel phone to phone, and through rescue boats and teams, to the district control room. The control room’s answer travels back the same way.</p>
-  <div class="meta"><span>Concept document</span><span>Theme 05 · Surakshit Bharat</span><span>Track A · Product / Technology</span><span>Stage · Working prototype</span></div>
-  <img class="hero" src="../../website/assets/mock/phones-trio.png" alt="">
-  <div class="foot"><span>SevaFirst Innovation Challenge</span><span>meshalive.benzo.co.in · github.com/yogeshwardev/MESHALIVE-</span></div>
+  <div class="brand"><svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 16 L16 44 M32 16 L48 44 M16 44 L48 44" stroke="#FF3B3B" stroke-width="4.5" fill="none" stroke-linecap="round"/><circle cx="32" cy="16" r="7" fill="#FF3B3B"/><circle cx="16" cy="44" r="6" fill="#fff"/><circle cx="48" cy="44" r="6" fill="#fff"/></svg>MeshAlive</div>
+  <div class="doc">Concept document</div>
+  <h1>MeshAlive</h1>
+  <div class="tag">An offline disaster-response network that carries SOS messages to the district control room, and help back to people, when mobile towers fail.</div>
+  <table>
+    <tr><td>Challenge</td><td>SevaFirst Innovation Challenge 2026</td></tr>
+    <tr><td>Theme</td><td>05 · Surakshit Bharat</td></tr>
+    <tr><td>Track</td><td>Track A · Product or Technology</td></tr>
+    <tr><td>Stage</td><td>Working prototype</td></tr>
+    <tr><td>Website and demo</td><td>meshalive.benzo.co.in</td></tr>
+    <tr><td>Source code</td><td>github.com/yogeshwardev/MESHALIVE-</td></tr>
+    <tr><td>Date</td><td>November 2026</td></tr>
+  </table>
+  <img class="art" src="../../website/assets/mock/phone-situation.png" alt="">
+  <div class="ftr"><span>MeshAlive · Concept document</span><span>meshalive.benzo.co.in</span></div>
 </section>
 
-<!-- 2. PROBLEM -->
+<!-- EXECUTIVE SUMMARY + CONTENTS -->
 <section class="page">
-  <div class="kicker">01 · The problem</div>
-  <h2>When the towers go down, rescue goes blind</h2>
-  <p class="lead">Every cyclone and flood season, coastal and low-lying districts lose mobile coverage for hours or days. Towers lose power, backhaul links are cut, and the network that remains is overloaded. This happened in the 2015 Chennai floods and again during Cyclone Michaung in 2023.</p>
-  <div class="grid3">
-    <div class="card"><span class="tag" style="background:#FFE4E8;color:#C81E3A">People in danger</span><h3>Cannot call for help</h3><p>Trapped families, the elderly, patients and people with disabilities cannot call, text or share their location.</p></div>
-    <div class="card"><span class="tag" style="background:#F0F0F0;color:#262626">Control rooms</span><h3>Work blind</h3><p>No view of who needs help, where they are, how many people are with them, or who is most urgent.</p></div>
-    <div class="card"><span class="tag" style="background:#FEF3C7;color:#92400E">Existing apps</span><h3>Are only chat tools</h3><p>They don’t reach rescuers, don’t prioritise, drain the phones that relay for others, and can’t carry a reply back.</p></div>
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n"></span><h2>Executive summary</h2></div>
+  <p class="lead">Every cyclone and flood season, Indian districts lose mobile coverage for hours or days, at exactly the time when people most need help. People who are trapped cannot call for rescue, and district control rooms cannot see who needs help, where they are, or how urgent each case is.</p>
+  <p>MeshAlive keeps emergency communication working without towers, internet or new hardware. It is an Android app and a browser-based district dashboard. A person in danger sends a one-tap SOS that carries their GPS location and a short situation report, scored from 0 to 100 for urgency. Nearby phones relay the message over Bluetooth and Wi-Fi using battery-aware routing. When no route exists, rescue boats and teams carry the message out of the dead zone. The first phone that reaches signal uploads it to a live, urgency-sorted map in the control room. The control room’s reply, such as “Rescue team on the way” or an evacuation alert, travels back through the same mesh and is digitally signed so it cannot be faked.</p>
+  <p>The prototype is complete and working: an Android app in Tamil and English, the control-room dashboard and 49 automated tests. In a 200-phone simulation, battery-aware routing delivered 100% of SOS messages with 147 times fewer radio transmissions than flooding. Citizens, rescuers and control rooms pay nothing for hardware. We are seeking a pilot partnership with a District Disaster Management Authority to field-test MeshAlive in one flood-prone ward.</p>
+
+  <div class="kpis" style="margin-top:5mm">
+    <div><b>100%</b><span>SOS delivered in a 200-phone simulation</span></div>
+    <div><b>147×</b><span>fewer radio transmissions than flooding</span></div>
+    <div><b>₹0</b><span>hardware cost for citizens and rescuers</span></div>
+    <div><b>49</b><span>automated tests passing</span></div>
   </div>
-  <h3 style="margin:18px 0 6px;font-size:13pt">Who is affected, and where</h3>
-  <div class="grid2">
-    <div class="card"><h3>People</h3><ul>
+
+  <div class="sec next"><span class="n"></span><h2>Contents</h2></div>
+  <div class="toc">
+    <div><span>1</span><span>The problem</span><span>3</span></div>
+    <div><span>2</span><span>The solution</span><span>4</span></div>
+    <div><span>3</span><span>District control room</span><span>5</span></div>
+    <div><span>4</span><span>Innovation and comparison</span><span>6</span></div>
+    <div><span>5</span><span>Technical approach</span><span>6</span></div>
+    <div><span>6</span><span>Prototype and evidence</span><span>7</span></div>
+    <div><span>7</span><span>Impact, cost and implementation</span><span>8</span></div>
+    <div><span>8</span><span>Adoption and support required</span><span>9</span></div>
+  </div>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 2 of 9</span></div>
+</section>
+
+<!-- 1 PROBLEM -->
+<section class="page">
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">1</span><h2>The problem</h2></div>
+  <p class="lead">Every cyclone and flood season, coastal and low-lying districts lose mobile coverage for hours or days. Towers lose power, backhaul links are cut, and the network that remains is overloaded. This happened in the 2015 Chennai floods and again during Cyclone Michaung in 2023.</p>
+
+  <h3>1.1 Three gaps in today’s response</h3>
+  <table>
+    <tr><th style="width:30%">Gap</th><th>What happens today</th></tr>
+    <tr><td>People cannot call for help</td><td>Trapped families, the elderly, patients and people with disabilities cannot call, text or share their location.</td></tr>
+    <tr><td>Control rooms work blind</td><td>There is no view of who needs help, where they are, how many people are with them, or which case is most urgent. Boats and teams search by sight and word of mouth.</td></tr>
+    <tr><td>Existing apps are chat tools</td><td>Offline chat apps do not reach rescuers, do not prioritise urgent cases, drain the phones that relay for others, and cannot carry a reply back.</td></tr>
+  </table>
+
+  <h3>1.2 Who is affected, and where</h3>
+  <div class="cols">
+    <div><b>People</b><ul>
       <li>Families in flood- and cyclone-prone areas, especially the elderly, children, people with disabilities and patients</li>
       <li>Fishing communities and low-lying coastal settlements</li>
-      <li>Rescue teams (NDRF, SDRF, fire and rescue, boat operators, ambulance crews)</li>
+      <li>Rescue teams: NDRF, SDRF, fire and rescue services, boat operators, ambulance crews</li>
       <li>District Emergency Operations Centres and Disaster Management Authorities</li></ul></div>
-    <div class="card"><h3>Places</h3><ul>
+    <div><b>Places</b><ul>
       <li>Coastal districts of Tamil Nadu, such as Chennai, Cuddalore, Nagapattinam and Thoothukudi</li>
       <li>India’s cyclone-exposed east and west coasts</li>
-      <li>River-flood regions: Brahmaputra and Ganga basins, Kerala</li>
+      <li>River-flood regions: the Brahmaputra and Ganga basins, and Kerala</li>
       <li>Cities where flooding cuts power to mobile towers</li></ul></div>
   </div>
-  <div class="card" style="margin-top:12px;background:var(--night);color:#fff;border:none">
-    <b style="font-family:Sora">Problem statement.</b> When cyclones and floods take down mobile towers and power, people in danger cannot call for help, and district control rooms cannot see who needs rescue, where they are, or how urgent it is.
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>2</span></div>
+
+  <h3>1.3 Why it matters</h3>
+  <p>In the first hours of a disaster, rescue capacity is scarce. Without location and urgency information, boats reach the people who are easiest to see rather than those in the most danger, and families who are already safe are searched for while others wait.</p>
+
+  <div class="statement"><b>Problem statement</b>When cyclones and floods take down mobile towers and power, people in danger cannot call for help, and district control rooms cannot see who needs rescue, where they are, or how urgent it is.</div>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 3 of 9</span></div>
 </section>
 
-<!-- 3. SOLUTION -->
+<!-- 2 SOLUTION -->
 <section class="page">
-  <div class="kicker">02 · The solution</div>
-  <h2>A complete rescue loop on the phones people already own</h2>
-  <p class="lead">MeshAlive is an Android app plus a browser-based district control room. Together they keep emergency communication working when the mobile network has failed, with no extra hardware.</p>
-  <div class="loop">
-    <div style="background:var(--coral)"><b>1 · Ask for help</b>One-tap SOS with GPS and a situation report, scored 0–100 for urgency. Tamil and English.</div>
-    <div style="background:#262626"><b>2 · Phones relay</b>Bluetooth and Wi-Fi mesh. Battery-aware routing; the most urgent SOS goes first.</div>
-    <div style="background:var(--violet)"><b>3 · Rescuers carry</b>Boats and NDRF teams pick up stuck SOS and carry them out of dead zones.</div>
-    <div style="background:var(--teal)"><b>4 · Control room</b>The first phone with signal uploads everything to a live map, sorted by urgency.</div>
-    <div style="background:var(--green)"><b>5 · Help returns</b>Dispatch and evacuation alerts travel back through the mesh to phones with no signal.</div>
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">2</span><h2>The solution</h2></div>
+  <p class="lead">MeshAlive is an Android app and a browser-based district control room. Together they keep emergency communication working when the mobile network has failed, using only the phones people already own.</p>
+
+  <h3>2.1 The rescue loop</h3>
+  <div class="flow">
+    <div><i>STEP 1</i><b>Ask for help</b>One-tap SOS with GPS and a situation report, scored 0–100 for urgency.</div>
+    <div><i>STEP 2</i><b>Phones relay</b>Bluetooth and Wi-Fi mesh with battery-aware routing. Most urgent first.</div>
+    <div><i>STEP 3</i><b>Rescuers carry</b>Boats and NDRF teams carry stuck SOS out of areas with no signal.</div>
+    <div><i>STEP 4</i><b>Control room sees</b>The first phone with signal uploads to a live, urgency-sorted map.</div>
+    <div><i>STEP 5</i><b>Help returns</b>Dispatch and evacuation alerts travel back to phones with no signal.</div>
   </div>
-  <div class="grid2">
-    <div class="card"><h3>For people in danger</h3><ul>
-      <li>30-second guided setup: language, household, role</li>
-      <li>SOS with a 3-second countdown and Cancel, so there are no false alarms</li>
-      <li>Situation report: people, trapped, injured, elderly, children, disabled, water level → urgency score</li>
-      <li>“I’m safe” check-ins so rescuers can skip safe households</li>
-      <li>“Rescue team on the way” banner, even with no signal</li></ul></div>
-    <div class="card"><h3>For rescuers and officials</h3><ul>
+
+  <h3>2.2 Key features</h3>
+  <div class="cols">
+    <div><b>For people in danger</b><ul>
+      <li>30-second guided setup: language, household and role</li>
+      <li>SOS with a 3-second countdown and Cancel, to prevent false alarms</li>
+      <li>Situation report: people, trapped, injured, elderly, children, disabled and water level, turned into an urgency score</li>
+      <li>“I’m safe” check-ins, so rescuers can skip safe households</li>
+      <li>“Rescue team on the way” banner, even with no signal</li>
+      <li>Full SOS flow in Tamil and English</li></ul></div>
+    <div><b>For rescuers and officials</b><ul>
       <li>Rescue-carrier mode for boats, NDRF/SDRF teams and ambulances</li>
       <li>Any phone that regains signal becomes a gateway automatically</li>
-      <li>Live district dashboard: map, urgency, people count, route</li>
-      <li>Dispatch team / mark rescued / evacuation broadcast, digitally signed</li>
-      <li>Impact tools: field-trial evidence recorder and district coverage planner</li></ul></div>
+      <li>Live district dashboard: map, urgency, people count and route</li>
+      <li>Dispatch team, mark rescued and evacuation broadcast, all digitally signed</li>
+      <li>Field-trial evidence recorder and district coverage planner</li></ul></div>
   </div>
-  <div class="grid3" style="margin-top:12px">
-    <img class="mock" src="../../website/assets/mock/phone-home.png" alt="">
-    <img class="mock" src="../../website/assets/mock/phone-situation.png" alt="">
-    <img class="mock" src="../../website/assets/mock/phone-countdown.png" alt="">
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>3</span></div>
+
+  <figure>
+    <div class="phones">
+      <div><img src="../../website/assets/mock/phone-home.png" alt=""><span>Home: mesh status and one-tap SOS</span></div>
+      <div><img src="../../website/assets/mock/phone-situation.png" alt=""><span>Situation report: urgency 81, critical</span></div>
+      <div><img src="../../website/assets/mock/phone-countdown.png" alt=""><span>3-second countdown with Cancel</span></div>
+    </div>
+    <figcaption><b>Figure 1.</b> Screens from the working Android app.</figcaption>
+  </figure>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 4 of 9</span></div>
 </section>
 
-<!-- 4. CONTROL ROOM -->
+<!-- 3 CONTROL ROOM -->
 <section class="page">
-  <div class="kicker">03 · District control room</div>
-  <h2>Every SOS on one live map, and help sent back</h2>
-  <p class="lead">The dashboard runs in any browser. Each SOS appears with its urgency, people count, triage details, GPS location and the exact route it took through the mesh.</p>
-  <img class="mock" src="../../website/assets/mock/browser-dashboard.png" alt="" style="margin:4px 0 10px">
-  <div class="grid2">
-    <div class="card"><h3>Closing the loop</h3><p>An operator presses <b>Dispatch team</b> and types a note (“Boat 7 on the way, stay on the roof”). A gateway pushes it into the offline mesh, the victim’s phone shows <b>Rescue team on the way</b>, and the dashboard shows <b>✓ victim’s phone confirmed</b>.</p></div>
-    <div class="card"><h3>Evacuation broadcasts</h3><p>Alerts in any language spread phone to phone to every device in the mesh, and are re-shared with phones that come into range later. Every command is signed with HMAC-SHA256, so fake evacuation orders are rejected.</p></div>
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>4</span></div>
-</section>
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">3</span><h2>District control room</h2></div>
+  <p class="lead">The dashboard runs in any browser on an existing control-room PC. Each SOS appears with its urgency, people count, situation details, GPS location and the route it took through the mesh.</p>
+  <figure style="margin-top:0">
+    <img src="../../website/assets/mock/browser-dashboard.png" alt="">
+    <figcaption><b>Figure 2.</b> The district control-room dashboard, with SOS sorted by urgency on a live map of Chennai (sample data).</figcaption>
+  </figure>
 
-<!-- 5. INNOVATION + HOW IT WORKS -->
-<section class="page">
-  <div class="kicker">04 · What is new</div>
-  <h2>A rescue system, not a chat app</h2>
+  <h3>3.1 Operator actions</h3>
   <table>
-    <tr><th style="width:26%"></th><th>Chat apps (Bridgefy, Briar)</th><th>LoRa radios (Meshtastic, goTenna)</th><th class="us">MeshAlive</th></tr>
-    <tr><td>Reaches rescuers</td><td>No</td><td>No</td><td class="us">Live district dashboard</td></tr>
-    <tr><td>Help back to victim</td><td>No</td><td>No</td><td class="us">Dispatch and evacuation alerts through the mesh</td></tr>
-    <tr><td>Prioritises urgent cases</td><td>No</td><td>No</td><td class="us">Triage score 0–100, most urgent sent first</td></tr>
-    <tr><td>No phone in range</td><td>Message waits</td><td>Message waits</td><td class="us">Rescue carriers physically carry it out</td></tr>
-    <tr><td>Battery</td><td>Flooding drains phones</td><td>Flooding</td><td class="us">Battery-aware routing</td></tr>
-    <tr><td>Extra hardware</td><td>None</td><td>₹2,500+ radio per person</td><td class="us">None</td></tr>
-    <tr><td>Fake alerts</td><td>–</td><td>–</td><td class="us">Signed control-room commands</td></tr>
-    <tr><td>Language</td><td>English</td><td>English</td><td class="us">Tamil and English</td></tr>
+    <tr><th style="width:28%">Action</th><th>What happens</th></tr>
+    <tr><td>Dispatch team</td><td>The operator types a note such as “Boat 7 on the way, stay on the roof”. A gateway pushes it into the offline mesh, the person’s phone shows <b>Rescue team on the way</b>, and the dashboard confirms that the phone received it.</td></tr>
+    <tr><td>Mark rescued</td><td>Closes the case on the map and tells the household that the rescue is recorded.</td></tr>
+    <tr><td>Evacuation broadcast</td><td>An alert in any language spreads phone to phone to every device in the mesh, and is shared again with phones that come into range later.</td></tr>
+    <tr><td>Signed commands</td><td>Every command is signed with HMAC-SHA256. Phones reject anything unsigned, altered or out of date, so a fake evacuation order cannot spread.</td></tr>
   </table>
-  <div class="kicker" style="margin-top:16px">05 · How it works</div>
-  <div class="arch" style="margin-top:6px">
-    <div><b>1 · Discovery</b><span>Phones find each other over Bluetooth and Wi-Fi (Google Nearby Connections) and connect automatically, with no towers or internet.</span></div>
-    <div><b>2 · Network map</b><span>Every few seconds each phone shares its battery, neighbours and internet status. Every phone rebuilds a live map of the mesh and measures link quality (round-trip time).</span></div>
-    <div><b>3 · Routing</b><span>Battery-aware Dijkstra: edge cost = link quality + battery penalty + hop cost. A virtual “super-node” joined to all gateways gives every phone its best next hop in one run, O((V+E) log V).</span></div>
-    <div><b>4 · Priority and reliability</b><span>An urgency priority queue, store-and-forward retries, a duplicate filter, a hop limit (TTL) and delivery receipts (ACKs) with hop count.</span></div>
-    <div><b>5 · Carriers and gateways</b><span>Custody transfer to rescue carriers; any phone that gets internet uploads what it carries.</span></div>
-    <div><b>6 · Security</b><span>AES-GCM encrypted messages; HMAC-SHA256 signed commands from the control room.</span></div>
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>5</span></div>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 5 of 9</span></div>
 </section>
 
-<!-- 6. EVIDENCE -->
+<!-- 4 INNOVATION + 5 TECH -->
 <section class="page">
-  <div class="kicker">06 · Evidence</div>
-  <h2>Built, tested and measured</h2>
-  <div class="grid3">
-    <div class="card"><div class="num" style="color:var(--green)">100%</div><p>SOS delivered with battery-aware routing (200-phone simulation)</p></div>
-    <div class="card"><div class="num" style="color:var(--coral)">147×</div><p>fewer radio transmissions than flooding (99 vs 14,533)</p></div>
-    <div class="card"><div class="num" style="color:var(--violet)">2×</div><p>battery left on the weakest phone vs shortest-hop routing (6.3% vs 3.2%)</p></div>
-  </div>
-  <table style="margin-top:12px">
-    <tr><th>Simulation: 200 phones, 20 SOS, same network for all</th><th>Flooding</th><th>BFS</th><th class="us">Battery-aware Dijkstra</th></tr>
-    <tr><td>Delivery ratio</td><td>85%</td><td>100%</td><td class="us">100%</td></tr>
-    <tr><td>Radio transmissions</td><td>14,533</td><td>88</td><td class="us">99</td></tr>
-    <tr><td>Average hops</td><td>5.47</td><td>4.40</td><td class="us">4.95</td></tr>
-    <tr><td>Weakest phone’s battery left</td><td>0.0%</td><td>3.2%</td><td class="us">6.3%</td></tr>
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">4</span><h2>Innovation and comparison</h2></div>
+  <p>Offline messaging already exists, but as chat between phones. MeshAlive is built as a complete rescue system, from the person in danger to the control room and back.</p>
+  <table>
+    <tr><th style="width:24%"></th><th>Chat apps<br>(Bridgefy, Briar)</th><th>LoRa radios<br>(Meshtastic, goTenna)</th><th class="hl">MeshAlive</th></tr>
+    <tr><td>Reaches rescuers</td><td>No</td><td>No</td><td class="hl">Live district dashboard</td></tr>
+    <tr><td>Help back to the person</td><td>No</td><td>No</td><td class="hl">Dispatch and evacuation alerts</td></tr>
+    <tr><td>Prioritises urgent cases</td><td>No</td><td>No</td><td class="hl">Urgency score 0–100</td></tr>
+    <tr><td>No phone in range</td><td>Message waits</td><td>Message waits</td><td class="hl">Rescue carriers carry it out</td></tr>
+    <tr><td>Battery</td><td>Flooding drains phones</td><td>Flooding</td><td class="hl">Battery-aware routing</td></tr>
+    <tr><td>Extra hardware</td><td>None</td><td>₹2,500+ per person</td><td class="hl">None</td></tr>
+    <tr><td>Fake alerts</td><td>Not addressed</td><td>Not addressed</td><td class="hl">Signed commands</td></tr>
+    <tr><td>Language</td><td>English</td><td>English</td><td class="hl">Tamil and English</td></tr>
   </table>
-  <div class="grid2" style="margin-top:12px">
-    <div class="card"><h3>What exists today</h3><ul>
-      <li>Working Android app (APK) with all features listed above</li>
+
+  <div class="sec next"><span class="n">5</span><h2>Technical approach</h2></div>
+  <table>
+    <tr><th style="width:24%">Layer</th><th>How it works</th></tr>
+    <tr><td>Discovery</td><td>Phones find each other over Bluetooth and Wi-Fi (Google Nearby Connections) and connect automatically, with no towers or internet.</td></tr>
+    <tr><td>Network map</td><td>Every few seconds each phone shares its battery, neighbours and internet status. Every phone rebuilds a live map of the mesh and measures link quality by round-trip time.</td></tr>
+    <tr><td>Routing</td><td>Battery-aware Dijkstra. Edge cost = link quality + battery penalty + hop cost. A virtual super-node joined to all gateways gives each phone its best next hop in one run, O((V + E) log V).</td></tr>
+    <tr><td>Priority and reliability</td><td>Urgency priority queue, store-and-forward retries, duplicate filter, hop limit (TTL) and delivery receipts with hop count.</td></tr>
+    <tr><td>Carriers and gateways</td><td>Custody transfer to rescue carriers. Any phone that gets internet uploads what it carries.</td></tr>
+    <tr><td>Security</td><td>AES-GCM encrypted messages; HMAC-SHA256 signed control-room commands.</td></tr>
+    <tr><td>Stack</td><td>Kotlin, Jetpack Compose, Room database, Google Nearby Connections; dashboard in plain HTML and JavaScript with Leaflet maps.</td></tr>
+  </table>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 6 of 9</span></div>
+</section>
+
+<!-- 6 EVIDENCE -->
+<section class="page">
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">6</span><h2>Prototype and evidence</h2></div>
+  <p class="lead">The prototype is built and working. Routing was measured with the app’s own engine on a simulated network of 200 phones sending 20 SOS messages.</p>
+  <table>
+    <tr><th>Measure (same network for all methods)</th><th class="num">Flooding</th><th class="num">Shortest hop (BFS)</th><th class="num hl">Battery-aware Dijkstra</th></tr>
+    <tr><td>SOS delivered</td><td class="num">85%</td><td class="num">100%</td><td class="num hl">100%</td></tr>
+    <tr><td>Radio transmissions</td><td class="num">14,533</td><td class="num">88</td><td class="num hl">99</td></tr>
+    <tr><td>Average hops</td><td class="num">5.47</td><td class="num">4.40</td><td class="num hl">4.95</td></tr>
+    <tr><td>Battery left on the weakest phone</td><td class="num">0.0%</td><td class="num">3.2%</td><td class="num hl">6.3%</td></tr>
+  </table>
+  <p style="margin-top:2mm;font-size:8.3pt;color:var(--muted)">Battery-aware routing uses slightly more hops than shortest-hop routing, but leaves twice as much battery on the weakest phone, so the mesh stays alive longer.</p>
+
+  <div class="cols" style="margin-top:3mm">
+    <div><h3>6.1 What exists today</h3><ul>
+      <li>Working Android app (APK) with all features described above</li>
       <li>Working control-room dashboard with signed dispatch and broadcast</li>
-      <li>Source code on GitHub; live website with dashboard demo</li>
-      <li>49 automated tests: routing, forwarding, duplicate filtering, TTL, triage, command signatures, coverage planner, evidence reports</li></ul></div>
-    <div class="card"><h3>Field-trial readiness</h3><ul>
-      <li>Built-in evidence recorder logs every real delivery: success rate, round-trip time, hops, phones met, relays</li>
-      <li>One-tap export of a field-trial report for pilot review</li>
-      <li>Demo controls for in-room trials (cut links, simulate low battery)</li>
-      <li>Next: structured pilot with 20–50 phones in one ward</li></ul></div>
+      <li>Public website with a live dashboard demo, and source code on GitHub</li>
+      <li>49 automated tests: routing, forwarding, duplicate filtering, TTL, triage, command signatures, coverage planner and evidence reports</li></ul></div>
+    <div><h3>6.2 Readiness for a field trial</h3><ul>
+      <li>Built-in recorder logs every real delivery: success rate, round-trip time, hops, phones met and relays</li>
+      <li>One-tap export of a field-trial report for review</li>
+      <li>Demo controls for in-room trials, such as cutting links and simulating low battery</li>
+      <li>Next step: a structured pilot with 20–50 phones in one ward</li></ul></div>
   </div>
-  <div class="grid3" style="margin-top:12px">
-    <img class="mock" src="../../website/assets/mock/phone-routing-log.png" alt="">
-    <img class="mock" src="../../website/assets/mock/phone-planner.png" alt="">
-    <img class="mock" src="../../website/assets/mock/phone-tamil.png" alt="">
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>6</span></div>
+
+  <figure>
+    <div class="phones">
+      <div><img src="../../website/assets/mock/phone-routing-log.png" alt=""><span>Live routing log</span></div>
+      <div><img src="../../website/assets/mock/phone-planner.png" alt=""><span>District coverage planner</span></div>
+      <div><img src="../../website/assets/mock/phone-tamil.png" alt=""><span>Home screen in Tamil</span></div>
+    </div>
+    <figcaption><b>Figure 3.</b> Evidence and planning tools inside the app.</figcaption>
+  </figure>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 7 of 9</span></div>
 </section>
 
-<!-- 7. IMPACT, COST, SCALE -->
+<!-- 7 IMPACT -->
 <section class="page">
-  <div class="kicker">07 · Impact, cost and scale</div>
-  <h2>Who benefits, what it costs, how it grows</h2>
-  <div class="grid2">
-    <div class="card"><h3>Beneficiaries and impact</h3><ul>
-      <li>People trapped or stranded: their SOS reaches rescuers without towers, and they know help is coming</li>
-      <li>Vulnerable groups are prioritised automatically by the situation report</li>
-      <li>Rescue teams get exact locations, people count and urgency</li>
-      <li>Control rooms get a live, prioritised picture and a channel to reach people without signal</li></ul>
-      <p style="margin-top:8px"><b style="color:var(--ink)">District planner (app’s own routing engine):</b> in a 1 km² ward with 1,000 app users (about 4 people per phone), around 3,700 of 4,000 people can reach the control room. This is a model, to be validated in the pilot.</p></div>
-    <div class="card"><h3>Cost and who pays</h3>
-      <table>
-        <tr><td><b>Citizens</b></td><td>₹0. Free app on their own phone; no SIM, data or account needed for the mesh</td></tr>
-        <tr><td><b>Rescue carriers</b></td><td>₹0. Phones that crews already carry</td></tr>
-        <tr><td><b>Control room</b></td><td>₹0. Any browser on an existing PC</td></tr>
-        <tr><td><b>Running</b></td><td>Small hosting cost for a self-hosted alert server; app maintenance</td></tr>
-        <tr><td><b>Rollout</b></td><td>Pre-monsoon awareness and install drives through the DDMA, which pays</td></tr>
-      </table></div>
-  </div>
-  <h3 style="margin:14px 0 6px;font-size:13pt">Implementation and scaling</h3>
-  <div class="grid3">
-    <div class="card"><span class="tag" style="background:#DCFCE7;color:#166534">Phase 1 · 3 months</span><h3>Field pilot</h3><p>One flood-prone ward with the District Disaster Management Authority, local NDRF/SDRF boats as carriers, dashboard in the district EOC. Measure delivery rate and SOS-to-dispatch time.</p></div>
-    <div class="card"><span class="tag" style="background:#F0F0F0;color:#262626">Phase 2</span><h3>District rollout</h3><p>Install drives through schools, colleges, panchayats, urban local bodies and SHGs. The planner’s adoption curve sets the install target per ward.</p></div>
-    <div class="card"><span class="tag" style="background:#FFE4E8;color:#9F1239">Phase 3</span><h3>State and national</h3><p>Distribution through the SDMA; dashboard feeds into state EOCs via the webhook; alerts aligned with the national Common Alerting Protocol; more Indian languages.</p></div>
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>7</span></div>
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">7</span><h2>Impact, cost and implementation</h2></div>
+  <h3>7.1 Beneficiaries and expected impact</h3>
+  <ul>
+    <li><b>People trapped or stranded:</b> their SOS reaches rescuers without towers, and they know help is coming.</li>
+    <li><b>Vulnerable groups:</b> prioritised automatically through the situation report.</li>
+    <li><b>Rescue teams:</b> exact locations, people count and urgency, instead of searching blind.</li>
+    <li><b>Control rooms:</b> a live, prioritised picture, and a channel to reach people without signal.</li>
+  </ul>
+  <div class="box" style="margin-top:4mm"><b>Coverage model.</b> Using the app’s own routing engine, a 1 km² ward with 1,000 app users (about 4 people per phone) lets around 3,700 of 4,000 people reach the control room. This is a model, to be validated in the pilot.</div>
+
+  <h3>7.2 Cost and who pays</h3>
+  <table>
+    <tr><th style="width:26%">Stakeholder</th><th style="width:14%">Hardware</th><th>Notes</th></tr>
+    <tr><td>Citizens</td><td>₹0</td><td>Free app on their own phone. No SIM, data or account needed for the mesh.</td></tr>
+    <tr><td>Rescue carriers</td><td>₹0</td><td>Uses the phones that crews already carry.</td></tr>
+    <tr><td>Control room</td><td>₹0</td><td>Runs in any browser on an existing PC.</td></tr>
+    <tr><td>Running cost</td><td>Low</td><td>A small self-hosted alert server and app maintenance.</td></tr>
+    <tr><td>Rollout</td><td>Programme</td><td>Pre-monsoon awareness and installation drives, funded through the DDMA.</td></tr>
+  </table>
+
+  <h3>7.3 Implementation plan</h3>
+  <table>
+    <tr><th style="width:26%">Phase</th><th>Scope</th></tr>
+    <tr><td>1 · Field pilot<br><span style="color:var(--muted);font-weight:400">3 months</span></td><td>One flood-prone ward with the District Disaster Management Authority, local NDRF/SDRF boats as carriers and the dashboard in the district EOC. Measure delivery rate and SOS-to-dispatch time.</td></tr>
+    <tr><td>2 · District rollout</td><td>Installation drives through schools, colleges, panchayats, urban local bodies and self-help groups. The planner’s adoption curve sets the install target for each ward.</td></tr>
+    <tr><td>3 · State and national</td><td>Distribution through the SDMA, dashboard feeds into state EOCs, alerts aligned with the national Common Alerting Protocol, and more Indian languages.</td></tr>
+  </table>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 8 of 9</span></div>
 </section>
 
-<!-- 8. ADOPTION + SUPPORT -->
+<!-- 8 ADOPTION -->
 <section class="page">
-  <div class="kicker">08 · Adoption and support</div>
-  <h2>Who can take it forward, and what we need</h2>
-  <div class="grid2">
-    <div class="card"><h3>Who could adopt it</h3><ul>
+  <div class="hdr"><span><b>MeshAlive</b> · Concept document</span><span>SevaFirst Innovation Challenge 2026</span></div>
+  <div class="sec"><span class="n">8</span><h2>Adoption and support required</h2></div>
+  <div class="cols">
+    <div><h3>8.1 Who could adopt it</h3><ul>
       <li>District Disaster Management Authorities and District EOCs (primary users)</li>
       <li>State Disaster Management Authorities, such as TNSDMA, for state-wide rollout</li>
-      <li>NDMA, for guidelines and integration with the Common Alerting Protocol based alert system</li>
-      <li>NDRF, SDRF, and fire and rescue services, as rescue carriers</li>
+      <li>NDMA, for guidelines and integration with the Common Alerting Protocol</li>
+      <li>NDRF, SDRF and fire and rescue services, as rescue carriers</li>
       <li>Urban local bodies and panchayats, for ward-level drives</li>
       <li>Ambulance services, fishing cooperatives and boat operators</li>
-      <li>NGOs and volunteer networks (Red Cross, civil defence); NSS/NCC units</li>
+      <li>NGOs and volunteer networks such as Red Cross and civil defence; NSS and NCC units</li>
       <li>State IT departments and telecom operators, for hosting and integration</li></ul></div>
-    <div class="card"><h3>Support we need</h3><ul>
+    <div><h3>8.2 Support we are seeking</h3><ul>
       <li>A pilot partnership with a district administration and its DDMA, with access to the district EOC</li>
       <li>Collaboration with NDRF/SDRF and boat operators to field-test carrier mode</li>
       <li>Mentorship in disaster-management operations and public-sector deployment</li>
-      <li>Technical guidance: security review, Common Alerting Protocol integration, self-hosting on government infrastructure</li>
-      <li>Pilot funding: alert server, test devices, awareness and training drives</li>
-      <li>IP guidance and incubation support</li></ul></div>
+      <li>Technical guidance: security review, Common Alerting Protocol integration and self-hosting on government infrastructure</li>
+      <li>Pilot funding for an alert server, test devices, and awareness and training drives</li>
+      <li>Guidance on intellectual property, and incubation support</li></ul></div>
   </div>
-  <div class="card" style="margin-top:14px;background:var(--night);color:#fff;border:none;padding:16px 18px">
-    <div style="font-family:Sora;font-size:15pt;font-weight:700">MeshAlive: because when the network fails, help shouldn’t.</div>
-    <div style="margin-top:8px;color:#A3A3A3;font-size:9.5pt">Website and live dashboard demo: <b style="color:#fff">meshalive.benzo.co.in</b> &nbsp;·&nbsp; Source code: <b style="color:#fff">github.com/yogeshwardev/MESHALIVE-</b> &nbsp;·&nbsp; Demo video: [link]</div>
-  </div>
-  <div class="grid3" style="margin-top:14px">
-    <img class="mock" src="../../website/assets/mock/phone-welcome.png" alt="">
-    <img class="mock" src="../../website/assets/mock/phone-role.png" alt="">
-    <img class="mock" src="../../website/assets/mock/phone-language.png" alt="">
-  </div>
-  <div class="foot"><span>MeshAlive · Concept document</span><span>8</span></div>
+
+  <h3 style="margin-top:7mm">8.3 Links</h3>
+  <table>
+    <tr><td style="width:30%">Website and live demo</td><td>https://meshalive.benzo.co.in</td></tr>
+    <tr><td>Control-room dashboard</td><td>https://meshalive.benzo.co.in/dashboard/?demo=1</td></tr>
+    <tr><td>Android app (APK)</td><td>https://meshalive.benzo.co.in/download/MeshAlive.apk</td></tr>
+    <tr><td>Source code</td><td>https://github.com/yogeshwardev/MESHALIVE-</td></tr>
+  </table>
+
+  <div class="statement" style="margin-top:8mm"><b>In one line</b>MeshAlive turns the phones people already own into a rescue network, so that when the mobile network fails, help does not.</div>
+  <div class="ftr"><span>meshalive.benzo.co.in</span><span>Page 9 of 9</span></div>
 </section>
 </body>
 </html>
