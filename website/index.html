@@ -50,6 +50,37 @@
   .btn-ghost:hover { border-color: #555; background: var(--bg-2); }
   nav .btn { height: 36px; padding: 0 16px; font-size: 14px; }
 
+  .nav-cta { display: flex; gap: 10px; }
+  .btn .dl { width: 16px; height: 16px; }
+  .btn-lg { height: 58px; padding: 0 26px; font-size: 15.5px; border-radius: 14px; }
+  .btn-store { height: 58px; padding: 0 28px 0 20px; border-radius: 14px; gap: 12px; color: #fff; font-weight: 700; font-size: 19px; letter-spacing: -0.01em; line-height: 1.05;
+    background: linear-gradient(180deg, #FF4D4D, #E5262B); box-shadow: 0 0 0 1px rgba(255,255,255,.14) inset, 0 10px 30px -8px rgba(255,59,59,.55); }
+  .btn-store:hover { background: linear-gradient(180deg, #FF5C5C, #F02E33); transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset, 0 16px 40px -8px rgba(255,59,59,.7); }
+  .btn-store .andr { width: 28px; height: 28px; flex: none; }
+  .btn-store span { display: flex; flex-direction: column; text-align: left; }
+  .btn-store small { font-size: 11.5px; font-weight: 500; opacity: .85; letter-spacing: .01em; }
+  .meta { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; color: var(--dim); font-size: 13.5px; }
+  .meta .dl { width: 14px; height: 14px; color: var(--green); flex: none; }
+
+  /* get the app */
+  .get { display: grid; grid-template-columns: 1.15fr .85fr; gap: 64px; align-items: center; padding: 56px; border: 1px solid var(--line); border-radius: 24px;
+    background: radial-gradient(600px 300px at 100% 0%, rgba(255,59,59,.10), transparent 70%), var(--bg-1); }
+  .grey { color: var(--muted); }
+  .steps { list-style: none; counter-reset: s; padding: 0; margin: 32px 0 34px; display: grid; gap: 18px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; column-gap: 14px; }
+  .steps li::before { content: counter(s); grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line-2); display: grid; place-items: center; font-family: "JetBrains Mono"; font-size: 13px; color: #fff; background: #000; }
+  .steps b { color: #fff; font-weight: 600; }
+  .steps span { color: var(--muted); font-size: 15px; }
+  .steps i { font-style: normal; color: var(--text); }
+  .get-card { border: 1px solid var(--line-2); border-radius: 20px; background: #000; padding: 30px; }
+  .qr { background: #fff; border-radius: 16px; padding: 18px; width: 200px; margin: 0 auto; }
+  .qr img { width: 100%; }
+  .qr-cap { text-align: center; color: var(--muted); font-size: 13.5px; margin: 14px 0 22px; }
+  .spec { margin: 0; border-top: 1px solid var(--line); }
+  .spec div { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .spec dt { color: var(--dim); }
+  .spec dd { margin: 0; color: var(--text); text-align: right; }
+
   /* hero */
   .hero { position: relative; padding: 150px 0 90px; overflow: hidden; border-top: 0; }
   #mesh { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; }
@@ -164,6 +195,7 @@
 
   @media (max-width: 980px) {
     .links { display: none; }
+    .nav-cta { margin-left: auto; }
     .hero { padding-top: 120px; }
     .hero .wrap, .row { grid-template-columns: 1fr; gap: 40px; }
     .row.rev .txt { order: 0; }
@@ -179,6 +211,7 @@
     .stat:nth-child(2n), .points div:nth-child(2n) { border-left: 1px solid var(--line); }
     .stat:nth-child(n+3), .points div:nth-child(n+3) { border-top: 1px solid var(--line); }
     .table { overflow-x: auto; } table { min-width: 680px; }
+    .get { grid-template-columns: 1fr; padding: 36px 28px; gap: 40px; }
   }
   @media (max-width: 560px) {
     section { padding: 84px 0; }
@@ -187,7 +220,12 @@
     .node, .stat, .points div { border-left: 0 !important; border-top: 1px solid var(--line); }
     .node:first-child, .stat:first-child, .points div:first-child { border-top: 0; }
     .dash { padding: 14px 14px 0; }
-    nav .btn { display: none; }
+    nav .nav-demo { display: none; }
+    nav .btn { padding: 0 14px; }
+    .get { padding: 28px 20px; }
+    .cta .btn { width: 100%; }
+    .meta { display: block; line-height: 1.7; } .meta .dl { display: inline; vertical-align: -2px; margin-right: 6px; }
+    .badge { height: auto; padding: 6px 14px; }
   }
 </style>
 </head>
@@ -202,8 +240,9 @@
       <a href="#control-room">Control room</a>
       <a href="#evidence">Evidence</a>
       <a href="#roadmap">Roadmap</a>
+      <a href="#get">Get the app</a>
     </div>
-    <a class="btn btn-primary" href="dashboard/?demo=1">Live demo</a>
+    <div class="nav-cta"><a class="btn btn-ghost nav-demo" href="dashboard/?demo=1">Live demo</a><a class="btn btn-primary" href="download/MeshAlive.apk" download><svg class="dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download</a></div>
   </div>
 </nav>
 
@@ -215,9 +254,10 @@
       <h1>Help reaches you, <span>even when the network doesn’t.</span></h1>
       <p class="lead">When cyclones and floods take down mobile towers, MeshAlive carries an SOS <b>phone to phone</b> and through <b>rescue boats</b> to the <b>district control room</b>, and brings the answer back.</p>
       <div class="cta">
-        <a class="btn btn-primary" href="dashboard/?demo=1">Open the control room</a>
-        <a class="btn btn-ghost" href="#solution">How it works</a>
+        <a class="btn btn-store" href="download/MeshAlive.apk" download><svg class="andr" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22A11.4 11.4 0 0 0 12 8.13c-1.78 0-3.46.37-4.92 1.01L5.22 5.920a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52ZM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/></svg><span><small>Download for</small>Android</span></a>
+        <a class="btn btn-ghost btn-lg" href="dashboard/?demo=1">Try the control room</a>
       </div>
+      <p class="meta"><svg class="dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Free · 19 MB · Android 8.0+ · No sign-up · Works with no network</p>
       <div class="facts">
         <div><b>₹0</b><span>extra hardware</span></div>
         <div><b>0</b><span>towers needed</span></div>
@@ -379,6 +419,39 @@
   </div>
 </section>
 
+<section id="get">
+  <div class="wrap">
+    <div class="get reveal">
+      <div class="get-txt">
+        <span class="eyebrow">Get the app</span>
+        <h2 class="title">Install it today.<br><span class="grey">Be ready before the next storm.</span></h2>
+        <p class="sub">MeshAlive has to be on the phone before the towers go down. It takes under a minute, and every install makes the mesh stronger for your whole street.</p>
+        <ol class="steps">
+          <li><b>Download the app</b><span>Tap the button below, or scan the code with your phone camera.</span></li>
+          <li><b>Allow the install</b><span>Android asks once to allow apps from your browser. Tap <i>Settings → Allow</i>, then <i>Install</i>.</span></li>
+          <li><b>Set up in 30 seconds</b><span>Pick English or தமிழ், add your household, and you are ready, even with no signal.</span></li>
+        </ol>
+        <div class="cta">
+          <a class="btn btn-store" href="download/MeshAlive.apk" download><svg class="andr" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22A11.4 11.4 0 0 0 12 8.13c-1.78 0-3.46.37-4.92 1.01L5.22 5.920a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52ZM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/></svg><span><small>Download for</small>Android</span></a>
+          <a class="btn btn-ghost btn-lg" href="https://github.com/yogeshwardev/MESHALIVE-" target="_blank" rel="noopener">View source code</a>
+        </div>
+      </div>
+      <div class="get-card">
+        <div class="qr"><img src="assets/qr-download.svg" alt="QR code to download the MeshAlive Android app" width="200" height="200"></div>
+        <p class="qr-cap">Scan with your phone camera to download</p>
+        <dl class="spec">
+          <div><dt>Version</dt><dd>1.0</dd></div>
+          <div><dt>Size</dt><dd>19 MB</dd></div>
+          <div><dt>Requires</dt><dd>Android 8.0 or later</dd></div>
+          <div><dt>Languages</dt><dd>English, தமிழ்</dd></div>
+          <div><dt>Price</dt><dd>Free · no ads · no sign-up</dd></div>
+          <div><dt>Uses</dt><dd>Bluetooth, Wi-Fi, location</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="faq">
   <div class="wrap">
     <div class="reveal">
@@ -398,8 +471,8 @@
 <section class="end">
   <div class="wrap reveal">
     <h2>Because when the network fails,<br>help shouldn’t.</h2>
-    <p>See the district control room with sample SOS data, and try dispatching a rescue team.</p>
-    <div class="cta"><a class="btn btn-primary" href="dashboard/?demo=1">Open the control room</a><a class="btn btn-ghost" href="download/MeshAlive.apk">Download the Android app</a></div>
+    <p>Install MeshAlive on your phone, or open the district control room with sample SOS data and dispatch a rescue team.</p>
+    <div class="cta"><a class="btn btn-store" href="download/MeshAlive.apk" download><svg class="andr" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.6 9.48l1.84-3.18a.38.38 0 0 0-.66-.38l-1.86 3.22A11.4 11.4 0 0 0 12 8.13c-1.78 0-3.46.37-4.92 1.01L5.22 5.920a.38.38 0 0 0-.66.38L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52ZM7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Zm10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"/></svg><span><small>Download for</small>Android</span></a><a class="btn btn-ghost btn-lg" href="dashboard/?demo=1">Try the control room</a></div>
   </div>
 </section>
 

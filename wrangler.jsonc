@@ -1,0 +1,10 @@
+// Cloudflare Workers (static assets) config: serve the landing site in ./website
+// at meshalive.benzo.co.in. "name" must match the Worker's name in the Cloudflare dashboard.
+{
+  "name": "meshalive",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./website",
+    "not_found_handling": "404-page"
+  }
+}
