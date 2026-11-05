@@ -1,41 +1,48 @@
-"""MeshAlive prototype video: narration script (one entry per scene)."""
+"""MeshAlive prototype video: narration script (one entry per scene), written to be spoken."""
 
 SCENES = [
     ("title",
-     "When cyclones and floods take down mobile towers, people in danger cannot call for help. "
-     "MeshAlive changes that."),
+     "Imagine a cyclone has just hit your city. The towers are down, there's no signal, "
+     "and a family is stuck on their roof. They can't call anyone. "
+     "That's the problem MeshAlive solves."),
     ("problem",
-     "In the 2015 Chennai floods, and again during Cyclone Michaung, whole neighbourhoods lost signal for days. "
-     "Families were trapped, and control rooms could not see who needed help, or where."),
+     "We've seen this before. In the 2015 Chennai floods, and again during Cyclone Michaung, "
+     "whole areas lost signal for days. People couldn't ask for help, "
+     "and control rooms simply couldn't see who needed it, or where."),
     ("setup",
-     "MeshAlive is a free Android app. Setup takes thirty seconds. "
-     "Choose English or Tamil, add your household, and pick your role."),
+     "MeshAlive is a free Android app, and setting it up takes about thirty seconds. "
+     "You pick English or Tamil, add a few details about your household, and choose your role. That's it."),
     ("home",
-     "With no towers and no internet, the phone keeps looking for other phones nearby, "
-     "over Bluetooth and Wi-Fi."),
+     "From then on, even with no towers and no internet, your phone keeps quietly looking "
+     "for other phones nearby, over Bluetooth and Wi-Fi."),
     ("sos",
-     "In an emergency, one tap sends an SOS. It carries your location and a short situation report: "
-     "how many people, who is trapped or elderly, and how high the water is. "
-     "The app turns this into an urgency score. Here, eighty-one. Critical. "
-     "A three-second countdown with Cancel prevents false alarms."),
+     "When something goes wrong, you just tap SOS. "
+     "Your message carries your location, along with a quick picture of your situation: "
+     "how many people are with you, whether someone's trapped or elderly, and how high the water has risen. "
+     "The app turns all of that into an urgency score. This family scores eighty-one, which is critical. "
+     "And to avoid false alarms, there's a three-second countdown, so you can cancel if you tapped by mistake."),
     ("tamil",
-     "The complete SOS flow also works in Tamil."),
+     "And yes, the whole thing works in Tamil too."),
     ("mesh",
-     "The SOS hops from phone to phone. Battery-aware routing avoids phones that are about to die, "
-     "and the most urgent messages go first. "
-     "If there is no route at all, a rescue boat's phone picks up the message, and carries it out of the dead zone."),
+     "Now, here's the clever part. Your SOS hops from one phone to the next. "
+     "It avoids phones that are running low on battery, and the most urgent messages always go first. "
+     "But what if there's no phone nearby at all? "
+     "Then a rescue boat's phone picks up the message, and carries it out to where there's signal."),
     ("dashboard",
-     "The first phone that finds signal uploads everything to the district control room. "
-     "Every SOS appears on a live map, sorted by urgency. "
-     "The officer dispatches a rescue team, and the reply travels back through the mesh, "
-     "so the family sees: rescue team on the way, even without signal. "
-     "Evacuation alerts reach every phone the same way, and every command is digitally signed, "
-     "so fake orders are rejected."),
+     "As soon as any phone finds signal, everything reaches the district control room. "
+     "Every SOS shows up on a live map, with the most urgent ones on top. "
+     "The officer sends a rescue team with one click, and that reply travels back through the same mesh. "
+     "So the family sees, rescue team on the way, even without any signal. "
+     "Evacuation alerts reach everyone the same way. "
+     "And every message from the control room is digitally signed, so nobody can send a fake order."),
     ("evidence",
-     "In a two-hundred-phone simulation, MeshAlive delivered every SOS, "
-     "with a hundred and forty-seven times fewer radio transmissions than flooding. "
-     "And the built-in planner shows how many installs each ward needs."),
+     "And we've tested it. In a simulation with two hundred phones, MeshAlive delivered every single SOS, "
+     "using a hundred and forty-seven times fewer radio transmissions than simple flooding. "
+     "A built-in planner even tells each ward how many people need the app."),
     ("close",
-     "No towers. No new hardware. Zero cost to citizens. "
+     "No towers. No extra hardware. Nothing for citizens to pay. "
      "MeshAlive. Because when the network fails, help shouldn't."),
 ]
+
+# shot changes inside a scene: cut when the sentence starting with this text begins
+CUTS = {"sos": "And to avoid false alarms", "mesh": "But what if"}

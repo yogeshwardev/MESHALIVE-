@@ -11,11 +11,11 @@ from script import SCENES  # noqa: E402
 
 OUT = Path(sys.argv[1])
 OUT.mkdir(parents=True, exist_ok=True)
-VOICE = "en-IN-NeerjaExpressiveNeural"
+VOICE = sys.argv[2] if len(sys.argv) > 2 else "en-IN-NeerjaExpressiveNeural"
 
 
 async def one(name, text):
-    com = edge_tts.Communicate(text, VOICE, rate="-4%", boundary="SentenceBoundary")
+    com = edge_tts.Communicate(text, VOICE, rate="+0%", boundary="SentenceBoundary")
     sents = []
     with open(OUT / f"{name}.mp3", "wb") as f:
         async for chunk in com.stream():
