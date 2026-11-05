@@ -9,3 +9,7 @@ captures/
 # College-only files, not part of the product
 MeshAlive_Agent_Prompt.md
 MeshAlive_Capstone.pptx
+
+# build tooling
+submission/deck/node_modules/
+submission/deck/package-lock.json

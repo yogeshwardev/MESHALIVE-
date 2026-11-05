@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MeshAlive — Help reaches you, even when the network doesn’t</title>
+<meta name="description" content="MeshAlive is an offline disaster-response network. When cyclones and floods take down mobile towers, SOS messages hop phone to phone and through rescue boats to the district control room, and help comes back.">
+<link rel="canonical" href="https://meshalive.benzo.co.in/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://meshalive.benzo.co.in/">
+<meta property="og:title" content="MeshAlive — offline disaster-response network">
+<meta property="og:description" content="SOS reaches rescuers, and help gets back, when mobile towers fail. Free, no extra hardware, Tamil and English.">
+<meta property="og:image" content="https://meshalive.benzo.co.in/assets/mock/phones-trio.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070B14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FF4D5E'/%3E%3Cpath d='M32 18 L18 42 M32 18 L46 42 M18 42 L46 42' stroke='white' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='18' r='6' fill='white'/%3E%3Ccircle cx='18' cy='42' r='5' fill='white'/%3E%3Ccircle cx='46' cy='42' r='5' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070B14; --bg2: #0B1220; --card: rgba(255,255,255,.04); --card2: rgba(255,255,255,.07);
+    --line: rgba(255,255,255,.09); --text: #E8EEF7; --muted: #94A3B8; --dim: #64748B;
+    --teal: #2DE2C8; --violet: #8B7CFF; --coral: #FF4D5E; --amber: #FBBF24; --green: #34D399; --blue: #60A5FA;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: Sora, system-ui, sans-serif; line-height: 1.12; margin: 0; letter-spacing: -0.02em; }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 22px; }
+  .grad { background: linear-gradient(92deg, var(--coral), #FF9A6B 45%, var(--amber)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grad2 { background: linear-gradient(92deg, var(--teal), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  /* nav */
+  nav { position: fixed; inset: 0 0 auto 0; z-index: 50; transition: background .25s, border-color .25s; border-bottom: 1px solid transparent; }
+  nav.scrolled { background: rgba(7,11,20,.78); backdrop-filter: blur(14px); border-color: var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: Sora; font-weight: 800; font-size: 20px; }
+  .brand i { width: 32px; height: 32px; border-radius: 10px; background: var(--coral); display: grid; place-items: center; box-shadow: 0 0 24px rgba(255,77,94,.55); }
+  nav .links { margin-left: auto; display: flex; gap: 26px; }
+  nav .links a { color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500; transition: color .2s; }
+  nav .links a:hover { color: #fff; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 14px 24px; border-radius: 14px; font-weight: 600; text-decoration: none; font-family: Sora; font-size: 15px; transition: transform .18s, box-shadow .18s, background .18s; border: 0; cursor: pointer; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.sos { background: linear-gradient(135deg, #FF5A6A, #E11D48); color: #fff; box-shadow: 0 12px 34px rgba(255,77,94,.4); }
+  .btn.glass { background: var(--card2); color: #fff; border: 1px solid var(--line); backdrop-filter: blur(10px); }
+  .btn.glass:hover { background: rgba(255,255,255,.12); }
+  nav .btn { padding: 10px 18px; }
+
+  /* hero */
+  .hero { position: relative; min-height: min(100vh, 980px); display: flex; align-items: center; overflow: hidden; padding: 120px 0 70px; }
+  #mesh { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .55; }
+  .glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+  .g1 { width: 520px; height: 520px; background: rgba(139,124,255,.35); top: -140px; right: -120px; }
+  .g2 { width: 460px; height: 460px; background: rgba(45,226,200,.22); bottom: -160px; left: -140px; }
+  .g3 { width: 300px; height: 300px; background: rgba(255,77,94,.25); top: 40%; right: 30%; }
+  .hero .wrap { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 30px; align-items: center; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 999px; background: var(--card2); border: 1px solid var(--line); font-size: 13.5px; color: #CBD5E1; }
+  .pill b { background: var(--coral); color: #fff; border-radius: 999px; padding: 2px 9px; font-size: 12px; font-weight: 700; }
+  .live { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(52,211,153,.7); animation: ping 1.8s infinite; }
+  @keyframes ping { 70% { box-shadow: 0 0 0 10px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
+  .hero h1 { font-size: clamp(40px, 4.8vw, 64px); font-weight: 800; margin: 22px 0 20px; }
+  .hero .lead { font-size: 19px; color: #B6C2D3; max-width: 580px; margin: 0 0 32px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .trust { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 34px; }
+  .trust span { font-size: 13px; color: var(--muted); padding: 6px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.02); }
+  .hero-art { position: relative; }
+  .hero-art img { width: 108%; max-width: none; margin-left: -4%; filter: drop-shadow(0 40px 60px rgba(0,0,0,.5)); }
+  .float { position: absolute; background: rgba(14,20,34,.85); backdrop-filter: blur(12px); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; font-size: 13px; color: #CBD5E1; box-shadow: 0 20px 40px rgba(0,0,0,.4); animation: bob 5s ease-in-out infinite; }
+  .float b { display: block; font-family: Sora; font-size: 14.5px; color: #fff; }
+  .f1 { left: -4%; top: 16%; }
+  .f2 { right: -2%; bottom: 14%; animation-delay: -2.5s; }
+  @keyframes bob { 50% { transform: translateY(-10px); } }
+
+  /* sections */
+  section { padding: 110px 0; position: relative; }
+  .kicker { display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--teal); }
+  .title { font-size: clamp(32px, 4vw, 52px); font-weight: 800; margin: 14px 0 16px; }
+  .sub { color: var(--muted); font-size: 18.5px; max-width: 760px; margin: 0; }
+  .center { text-align: center; } .center .sub { margin: 0 auto; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 48px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 28px; transition: transform .25s, border-color .25s, background .25s; }
+  .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.18); background: var(--card2); }
+  .card h3 { font-size: 21px; margin: 16px 0 8px; }
+  .card p { margin: 0; color: var(--muted); font-size: 16px; }
+  .ico { width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center; }
+  .ico svg { width: 26px; height: 26px; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 56px; position: relative; }
+  .steps::before { content: ""; position: absolute; left: 6%; right: 6%; top: 27px; height: 2px; background: linear-gradient(90deg, var(--coral), var(--violet), var(--teal), var(--green)); opacity: .5; }
+  .step { position: relative; text-align: center; padding: 0 6px; }
+  .step .n { width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center; font-family: Sora; font-weight: 800; font-size: 20px; color: #fff; background: var(--bg); border: 2px solid; position: relative; }
+  .step h3 { font-size: 18px; margin-bottom: 8px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* bento */
+  .bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(200px, auto); gap: 16px; margin-top: 52px; }
+  .b { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 26px; overflow: hidden; position: relative; }
+  .b h3 { font-size: 20px; margin-bottom: 8px; }
+  .b p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .b.wide { grid-column: span 2; } .b.tall { grid-row: span 2; }
+  .b .tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
+  .b img.ph { width: 72%; margin: 18px auto -40px; filter: drop-shadow(0 20px 30px rgba(0,0,0,.45)); }
+
+  /* gallery */
+  .gallery { display: flex; gap: 26px; overflow-x: auto; padding: 46px 6px 20px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .gallery figure { margin: 0; flex: 0 0 250px; scroll-snap-align: center; text-align: center; }
+  .gallery img { filter: drop-shadow(0 26px 34px rgba(0,0,0,.5)); transition: transform .3s; }
+  .gallery figure:hover img { transform: translateY(-8px) scale(1.02); }
+  .gallery figcaption { margin-top: 8px; font-size: 15px; color: #CBD5E1; font-weight: 600; }
+  .gallery figcaption span { display: block; color: var(--dim); font-weight: 400; font-size: 13.5px; }
+
+  /* control room */
+  .cr { display: grid; grid-template-columns: .9fr 1.4fr; gap: 40px; align-items: center; }
+  .cr ul { list-style: none; padding: 0; margin: 26px 0 30px; }
+  .cr li { display: flex; gap: 14px; margin: 16px 0; color: #CBD5E1; }
+  .cr li b { color: #fff; display: block; font-family: Sora; }
+  .dot { flex: 0 0 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; }
+  .cr img { filter: drop-shadow(0 40px 60px rgba(0,0,0,.55)); }
+
+  /* compare */
+  .table { margin-top: 44px; border: 1px solid var(--line); border-radius: 22px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  th, td { padding: 16px 18px; text-align: left; border-bottom: 1px solid var(--line); }
+  th { font-family: Sora; font-weight: 600; font-size: 14.5px; color: var(--muted); background: rgba(255,255,255,.03); }
+  td:first-child { color: #CBD5E1; font-weight: 500; }
+  td { color: var(--dim); }
+  th.us { color: #fff; background: linear-gradient(135deg, rgba(255,77,94,.35), rgba(139,124,255,.25)); }
+  td.us { color: #fff; font-weight: 600; background: rgba(255,77,94,.06); }
+  tr:last-child td { border-bottom: 0; }
+
+  /* numbers */
+  .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
+  .num { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 28px 24px; }
+  .num b { font-family: Sora; font-size: 50px; font-weight: 800; display: block; line-height: 1; margin-bottom: 10px; }
+  .num span { color: var(--muted); font-size: 15px; }
+  .impact { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-top: 70px; }
+  .impact img { width: 78%; margin: 0 auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,.5)); }
+  .checks { list-style: none; padding: 0; margin: 22px 0 0; }
+  .checks li { position: relative; padding-left: 34px; margin: 14px 0; color: #CBD5E1; }
+  .checks li::before { content: ""; position: absolute; left: 0; top: 5px; width: 20px; height: 20px; border-radius: 6px; background: rgba(52,211,153,.15) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2334D399' stroke-width='3'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/14px no-repeat; }
+
+  /* roadmap */
+  .road { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 48px; }
+  .phase { border-radius: 22px; padding: 28px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01)); }
+  .phase .t { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .phase h3 { font-size: 22px; margin: 10px 0 10px; }
+  .phase p { margin: 0; color: var(--muted); font-size: 15.5px; }
+
+  /* documents */
+  .docs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 46px; }
+  .doc { display: flex; gap: 16px; align-items: flex-start; padding: 22px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); text-decoration: none; transition: transform .2s, border-color .2s, background .2s; }
+  .doc:hover { transform: translateY(-3px); border-color: rgba(45,226,200,.45); background: var(--card2); }
+  .doc .fi { flex: 0 0 48px; height: 56px; border-radius: 10px; display: grid; place-items: center; font-family: Sora; font-weight: 800; font-size: 12px; color: #fff; }
+  .doc h3 { font-size: 16.5px; margin-bottom: 4px; }
+  .doc p { margin: 0; color: var(--muted); font-size: 14px; }
+  .doc .dl { margin-top: 8px; font-size: 13px; color: var(--teal); font-weight: 600; }
+
+  /* faq */
+  .faq { max-width: 860px; margin: 44px auto 0; }
+  details { border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin-bottom: 12px; background: var(--card); }
+  summary { cursor: pointer; font-family: Sora; font-weight: 600; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::after { content: "+"; color: var(--teal); font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); margin: 12px 0 0; font-size: 15.5px; }
+
+  /* final cta */
+  .final { border-radius: 30px; padding: 64px 48px; text-align: center; position: relative; overflow: hidden; background: radial-gradient(600px 300px at 20% 0%, rgba(255,77,94,.35), transparent 70%), radial-gradient(600px 300px at 80% 100%, rgba(139,124,255,.35), transparent 70%), #0E1526; border: 1px solid var(--line); }
+  .final h2 { font-size: clamp(30px, 4vw, 48px); }
+  .final p { color: #B6C2D3; max-width: 640px; margin: 16px auto 30px; }
+  .final .cta { justify-content: center; }
+  footer { padding: 46px 0 60px; color: var(--dim); font-size: 14px; border-top: 1px solid var(--line); margin-top: 100px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; }
+  footer a { color: var(--muted); text-decoration: none; }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } .float, .live { animation: none; } }
+
+  @media (max-width: 980px) {
+    nav .links { display: none; }
+    .hero .wrap, .cr, .impact { grid-template-columns: 1fr; }
+    .hero { min-height: auto; }
+    .hero-art img { width: 100%; margin: 0; }
+    .float { display: none; }
+    .grid3, .docs, .road { grid-template-columns: 1fr 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; row-gap: 34px; }
+    .steps::before { display: none; }
+    .bento { grid-template-columns: 1fr 1fr; }
+    .nums { grid-template-columns: 1fr 1fr; }
+    .table { overflow-x: auto; }
+    table { min-width: 640px; }
+  }
+  @media (max-width: 600px) {
+    section { padding: 76px 0; }
+    .grid3, .docs, .road, .bento, .steps { grid-template-columns: 1fr; }
+    .b.wide { grid-column: auto; } .b.tall { grid-row: auto; }
+    .final { padding: 44px 22px; }
+    nav .btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><i><svg width="18" height="18" viewBox="0 0 64 64"><path d="M32 18 L18 42 M32 18 L46 42 M18 42 L46 42" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="32" cy="18" r="7" fill="white"/><circle cx="18" cy="42" r="6" fill="white"/><circle cx="46" cy="42" r="6" fill="white"/></svg></i>MeshAlive</a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#app">App</a>
+      <a href="#control-room">Control room</a>
+      <a href="#impact">Impact</a>
+      <a href="#documents">Documents</a>
+    </div>
+    <a class="btn sos" href="#download">Get the app</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <canvas id="mesh" aria-hidden="true"></canvas>
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="wrap">
+    <div>
+      <span class="pill"><b>SevaFirst</b><span class="live"></span> Theme 05 · Surakshit Bharat</span>
+      <h1>Help reaches you,<br><span class="grad">even when the network doesn’t.</span></h1>
+      <p class="lead">When cyclones and floods take down mobile towers, MeshAlive passes your SOS phone to phone and through rescue boats to the district control room. Then it carries the answer back to you.</p>
+      <div class="cta">
+        <a class="btn sos" href="#download">Download for Android</a>
+        <a class="btn glass" href="dashboard/?demo=1">Open the control room →</a>
+      </div>
+      <div class="trust">
+        <span>₹0 extra hardware</span><span>No towers · No internet</span><span>தமிழ் · English</span><span>Working prototype</span>
+      </div>
+    </div>
+    <div class="hero-art">
+      <img src="assets/mock/phones-trio.webp" alt="MeshAlive app: SOS countdown, situation report with urgency 81 critical, and district coverage planner" width="1400" height="1100" fetchpriority="high">
+      <div class="float f1"><b>🆘 SOS · CRITICAL 81</b>3 people · trapped · water at waist</div>
+      <div class="float f2"><b>🚤 Rescue team on the way</b>Delivered through 3 phones · no signal</div>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">The problem</span>
+      <h2 class="title">When the towers go down,<br>rescue goes blind.</h2>
+      <p class="sub">Every cyclone and flood season, whole districts lose mobile coverage, as in the 2015 Chennai floods and Cyclone Michaung in 2023. That happens in the very hours when people most need help.</p>
+    </div>
+    <div class="grid3">
+      <div class="card reveal"><div class="ico" style="background:rgba(255,77,94,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4D5E" stroke-width="2" stroke-linecap="round"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5.2-2.8M19 13a10 10 0 0 0-1.9-1.5M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 10.7 5.1"/><circle cx="12" cy="20" r="1"/></svg></div><h3>People can’t call for help</h3><p>Trapped families, the elderly and patients can’t call, text or share where they are.</p></div>
+      <div class="card reveal"><div class="ico" style="background:rgba(139,124,255,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#8B7CFF" stroke-width="2" stroke-linecap="round"><path d="M9 3L3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg></div><h3>Control rooms work blind</h3><p>No idea who needs help, where they are, how many people, or who is most urgent.</p></div>
+      <div class="card reveal"><div class="ico" style="background:rgba(251,191,36,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 11v2"/></svg></div><h3>Chat apps aren’t enough</h3><p>Offline chat apps don’t reach rescuers, don’t prioritise, and drain the phones that relay for others.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" style="background:var(--bg2)">
+  <div class="wrap center">
+    <div class="reveal">
+      <span class="kicker">How it works</span>
+      <h2 class="title">A complete rescue loop, on phones<br>people already own</h2>
+      <p class="sub">Not just phone-to-phone chat. MeshAlive gets the SOS to rescuers, puts the most urgent first, and brings help back.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="n" style="border-color:#FF4D5E">1</div><h3>Ask for help</h3><p>One-tap SOS with GPS and a situation report, scored 0–100 for urgency.</p></div>
+      <div class="step reveal"><div class="n" style="border-color:#B06AF7">2</div><h3>Phones relay</h3><p>Bluetooth and Wi-Fi mesh. Battery-aware routing; most urgent first.</p></div>
+      <div class="step reveal"><div class="n" style="border-color:#8B7CFF">3</div><h3>Rescuers carry</h3><p>Boats and NDRF teams carry stuck SOS out of dead zones.</p></div>
+      <div class="step reveal"><div class="n" style="border-color:#2DE2C8">4</div><h3>Control room sees</h3><p>The first phone with signal uploads everything to a live map.</p></div>
+      <div class="step reveal"><div class="n" style="border-color:#34D399">5</div><h3>Help comes back</h3><p>Dispatch and evacuation alerts reach phones with no signal.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Features</span>
+      <h2 class="title">Built for the worst day<br>of someone’s life</h2>
+    </div>
+    <div class="bento">
+      <div class="b wide tall reveal" style="background:linear-gradient(160deg, rgba(255,77,94,.16), rgba(255,255,255,.02))">
+        <span class="tag" style="background:rgba(255,77,94,.18);color:#FF8A95">Triage</span>
+        <h3>An SOS that says how urgent it is</h3>
+        <p>People, trapped, injured, elderly, children, disabled and water level are set once and sent with every SOS. Each one becomes an urgency score, so a family on a roof is reached before a request for water.</p>
+        <img class="ph" src="assets/mock/phone-situation.webp" alt="Situation report with urgency 81 critical" loading="lazy">
+      </div>
+      <div class="b wide reveal" style="display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center;background:linear-gradient(160deg, rgba(139,124,255,.14), rgba(255,255,255,.02))"><div><span class="tag" style="background:rgba(139,124,255,.18);color:#B7ADFF">Rescue carriers</span><h3>Boats carry messages out</h3><p>Phones on rescue boats, NDRF teams and ambulances accept SOS that have no route and deliver them when they reach signal.</p></div><img src="assets/mock/phone-role.webp" alt="Role selection showing Rescue carrier" loading="lazy" style="width:100%;margin-bottom:-90px;filter:drop-shadow(0 20px 30px rgba(0,0,0,.45))"></div>
+      <div class="b reveal"><span class="tag" style="background:rgba(45,226,200,.15);color:#7FF0DD">Battery-aware</span><h3>Keeps the mesh alive</h3><p>Routing avoids phones about to die: 147× fewer radio transmissions than flooding.</p></div>
+      <div class="b reveal"><span class="tag" style="background:rgba(251,191,36,.15);color:#FCD34D">தமிழ்</span><h3>Tamil &amp; English</h3><p>The whole SOS flow in Tamil, with ready-made messages for anyone.</p></div>
+      <div class="b reveal"><span class="tag" style="background:rgba(52,211,153,.15);color:#6EE7B7">Two-way</span><h3>Help comes back</h3><p>“Rescue team on the way” reaches phones with no signal.</p></div>
+      <div class="b reveal"><span class="tag" style="background:rgba(96,165,250,.15);color:#93C5FD">Secure</span><h3>No fake alerts</h3><p>Encrypted messages; control-room commands are digitally signed.</p></div>
+      <div class="b reveal"><span class="tag" style="background:rgba(255,77,94,.15);color:#FF8A95">No false alarms</span><h3>3-second countdown</h3><p>Every SOS gives you time to cancel a stray tap.</p></div>
+      <div class="b reveal"><span class="tag" style="background:rgba(139,124,255,.15);color:#B7ADFF">Auto-gateway</span><h3>Any phone can upload</h3><p>The moment any phone finds signal, it uploads every SOS it carries.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="app" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">The app</span>
+      <h2 class="title">Simple enough for anyone, in a crisis</h2>
+      <p class="sub">Large targets, plain language, a guided setup and full Tamil support. Swipe through the real app.</p>
+    </div>
+    <div class="gallery">
+      <figure><img src="assets/mock/phone-welcome.webp" alt="Welcome screen" loading="lazy"><figcaption>Welcome<span>30-second setup</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-language.webp" alt="Language choice" loading="lazy"><figcaption>Language<span>English or தமிழ்</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-role.webp" alt="Role choice" loading="lazy"><figcaption>Role<span>Citizen, carrier or gateway</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-home.webp" alt="Home with SOS" loading="lazy"><figcaption>Home<span>Live mesh status and SOS</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-countdown.webp" alt="SOS countdown" loading="lazy"><figcaption>Safe SOS<span>Countdown with Cancel</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-situation.webp" alt="Situation report" loading="lazy"><figcaption>Situation report<span>Urgency 81 · Critical</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-tamil.webp" alt="Tamil interface" loading="lazy"><figcaption>Tamil<span>Full SOS flow</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-routing-log.webp" alt="Routing log" loading="lazy"><figcaption>Routing log<span>Every decision, live</span></figcaption></figure>
+      <figure><img src="assets/mock/phone-planner.webp" alt="District planner" loading="lazy"><figcaption>District planner<span>Coverage and cost</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="control-room">
+  <div class="wrap cr">
+    <div class="reveal">
+      <span class="kicker">District control room</span>
+      <h2 class="title">Every SOS on one live map</h2>
+      <p class="sub">Runs in any browser on the control-room PC, with nothing to install.</p>
+      <ul>
+        <li><span class="dot" style="background:rgba(255,77,94,.15)">🆘</span><div><b>Sorted by urgency</b>Critical cases first, with people count, triage and the route each SOS took.</div></li>
+        <li><span class="dot" style="background:rgba(52,211,153,.15)">🚤</span><div><b>Dispatch, and the victim knows</b>“Rescue team on the way” travels back to phones with no signal, with a delivery receipt.</div></li>
+        <li><span class="dot" style="background:rgba(251,191,36,.15)">📢</span><div><b>Evacuation broadcasts</b>In any language, to every phone in the mesh.</div></li>
+        <li><span class="dot" style="background:rgba(96,165,250,.15)">🔐</span><div><b>Signed commands</b>Phones reject anything not signed by the control room.</div></li>
+      </ul>
+      <a class="btn sos" href="dashboard/?demo=1">Try the live demo</a>
+    </div>
+    <img class="reveal" src="assets/mock/browser-dashboard.webp" alt="MeshAlive district control-room dashboard with SOS markers on a map of Chennai" loading="lazy">
+  </div>
+</section>
+
+<section id="different" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Why it’s different</span>
+      <h2 class="title">A rescue system, not a chat app</h2>
+    </div>
+    <div class="table reveal">
+      <table>
+        <tr><th></th><th>Chat apps<br>(Bridgefy, Briar)</th><th>LoRa radios<br>(Meshtastic, goTenna)</th><th class="us">MeshAlive</th></tr>
+        <tr><td>Reaches rescuers</td><td>No</td><td>No</td><td class="us">Live district dashboard</td></tr>
+        <tr><td>Help back to the victim</td><td>No</td><td>No</td><td class="us">Dispatch + evacuation alerts</td></tr>
+        <tr><td>Prioritises urgent cases</td><td>No</td><td>No</td><td class="us">Triage score 0–100</td></tr>
+        <tr><td>No phone in range</td><td>Message waits</td><td>Message waits</td><td class="us">Rescue carriers carry it out</td></tr>
+        <tr><td>Battery</td><td>Flooding drains phones</td><td>Flooding</td><td class="us">Battery-aware routing</td></tr>
+        <tr><td>Extra hardware</td><td>None</td><td>₹2,500+ per person</td><td class="us">None</td></tr>
+        <tr><td>Language</td><td>English</td><td>English</td><td class="us">Tamil &amp; English</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="impact">
+  <div class="wrap">
+    <div class="reveal center">
+      <span class="kicker">Impact &amp; evidence</span>
+      <h2 class="title">Measured, not just promised</h2>
+      <p class="sub">Results from MeshAlive’s own routing engine. The planner and the field-trial recorder are built into the app.</p>
+    </div>
+    <div class="nums">
+      <div class="num reveal"><b class="grad2" data-count="100" data-suffix="%">100%</b><span>SOS delivered with battery-aware routing (200-phone simulation)</span></div>
+      <div class="num reveal"><b class="grad" data-count="147" data-suffix="×">147×</b><span>fewer radio transmissions than flooding</span></div>
+      <div class="num reveal"><b class="grad2" data-count="2" data-suffix="×">2×</b><span>battery left on the weakest phone</span></div>
+      <div class="num reveal"><b class="grad" data-count="49" data-suffix="">49</b><span>automated tests: routing, triage, security</span></div>
+    </div>
+    <div class="impact">
+      <div class="reveal">
+        <h3 style="font-size:30px">Plan any district in seconds</h3>
+        <p class="sub" style="font-size:17px;margin-top:12px">Enter the area and the number of people with the app. The planner shows who can reach the control room, with and without rescue boats, and what it costs.</p>
+        <ul class="checks">
+          <li>1 km² ward, 1,000 app users: about 3,700 of 4,000 people reachable (model)</li>
+          <li>The adoption curve sets the install target for each district</li>
+          <li>₹0 per citizen, ₹0 for rescue carriers, ₹0 for the control room</li>
+          <li>The field-trial recorder exports real delivery evidence for pilots</li>
+        </ul>
+      </div>
+      <img class="reveal" src="assets/mock/phone-planner.webp" alt="District coverage planner showing 93% of people reachable" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section id="roadmap" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Path to deployment</span>
+      <h2 class="title">From one ward to every district</h2>
+    </div>
+    <div class="road">
+      <div class="phase reveal"><div class="t" style="color:var(--green)">Phase 1 · 3 months</div><h3>Field pilot</h3><p>One flood-prone ward with the District Disaster Management Authority, local NDRF/SDRF boats as carriers, and the dashboard in the district EOC. We measure delivery rate and SOS-to-dispatch time.</p></div>
+      <div class="phase reveal"><div class="t" style="color:var(--violet)">Phase 2</div><h3>District rollout</h3><p>Pre-monsoon install drives through schools, colleges, panchayats, urban local bodies and SHGs, guided by the planner’s adoption targets.</p></div>
+      <div class="phase reveal"><div class="t" style="color:var(--coral)">Phase 3</div><h3>State &amp; national</h3><p>Distribution through the SDMA, integration with state EOCs, alerts aligned with the national Common Alerting Protocol, and more Indian languages.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="documents">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Documents</span>
+      <h2 class="title">Everything for evaluators</h2>
+      <p class="sub">The concept document, the submission answers, app screens and the working app.</p>
+    </div>
+    <div class="docs">
+      <a class="doc reveal" href="docs/MeshAlive_Concept_Document.pdf" target="_blank" rel="noopener"><div class="fi" style="background:#E11D48">PDF</div><div><h3>Concept document</h3><p>Problem, solution, evidence, cost, impact and roadmap · 8 pages</p><div class="dl">Open PDF →</div></div></a>
+      <a class="doc reveal" href="docs/MeshAlive_App_Screenshots.pdf" target="_blank" rel="noopener"><div class="fi" style="background:#7C3AED">PDF</div><div><h3>App screens</h3><p>Every key screen and the control-room dashboard · 3 pages</p><div class="dl">Open PDF →</div></div></a>
+      <a class="doc reveal" href="docs/MeshAlive_Portal_Answers.docx"><div class="fi" style="background:#2563EB">DOC</div><div><h3>Submission answers</h3><p>All SevaFirst portal fields, within the word limits</p><div class="dl">Download Word →</div></div></a>
+      <a class="doc reveal" href="docs/MeshAlive_Pitch_Deck.pptx"><div class="fi" style="background:#EA580C">PPT</div><div><h3>Pitch deck</h3><p>The MeshAlive story in slides</p><div class="dl">Download PowerPoint →</div></div></a>
+      <a class="doc reveal" href="download/MeshAlive.apk" id="download"><div class="fi" style="background:#16A34A">APK</div><div><h3>Android app</h3><p>Install on 3 phones and try it offline · Android 8+</p><div class="dl">Download APK →</div></div></a>
+      <a class="doc reveal" href="https://github.com/yogeshwardev/MESHALIVE-" target="_blank" rel="noopener"><div class="fi" style="background:#334155">GIT</div><div><h3>Source code</h3><p>App, routing engine, dashboard and 49 tests</p><div class="dl">View on GitHub →</div></div></a>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <div class="reveal center"><span class="kicker">FAQ</span><h2 class="title">Questions evaluators ask</h2></div>
+    <div class="faq">
+      <details class="reveal"><summary>How is this different from Bridgefy or Briar?</summary><p>They are chat apps between phones. MeshAlive is a response system: triage-scored SOS, battery-aware routing, rescue carriers, a district dashboard, and dispatch messages and evacuation alerts back to people with no signal.</p></details>
+      <details class="reveal"><summary>Does it need internet or a SIM?</summary><p>No. Phones talk directly over Bluetooth and Wi-Fi. Only one phone somewhere in the mesh, or a rescue carrier that reaches signal, needs internet to upload to the control room.</p></details>
+      <details class="reveal"><summary>What if there are not enough phones nearby?</summary><p>The SOS is stored and retried automatically, and rescue boats, NDRF teams and ambulances in carrier mode pick it up and carry it out. The district planner shows how many installs a ward needs.</p></details>
+      <details class="reveal"><summary>Won’t relaying drain my battery?</summary><p>Routing deliberately avoids phones with low battery, and only the best path transmits. In tests it used 147× fewer transmissions than flooding.</p></details>
+      <details class="reveal"><summary>Can someone send a fake evacuation order?</summary><p>No. Control-room commands are signed with HMAC-SHA256, and phones reject anything unsigned, altered or stale. Message text is encrypted on the phone.</p></details>
+      <details class="reveal"><summary>What does it cost?</summary><p>₹0 for citizens, rescuers and the control room, since it runs on phones and PCs that already exist. The main cost is the district awareness and installation drive.</p></details>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:40px">
+  <div class="wrap">
+    <div class="final reveal">
+      <h2>Because when the network fails,<br><span class="grad">help shouldn’t.</span></h2>
+      <p>Install MeshAlive on three phones, turn on airplane mode, then Bluetooth, and send a test SOS. Then open the control room and send help back.</p>
+      <div class="cta"><a class="btn sos" href="download/MeshAlive.apk">Download the APK</a><a class="btn glass" href="dashboard/?demo=1">Open the control room</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b style="color:#fff;font-family:Sora">MeshAlive</b> · Offline disaster-response network · SevaFirst Innovation Challenge · Surakshit Bharat</div>
+    <div><a href="https://github.com/yogeshwardev/MESHALIVE-">GitHub</a> · <a href="dashboard/?demo=1">Control room</a> · <a href="#documents">Documents</a></div>
+  </div>
+</footer>
+
+<script>
+  // sticky nav
+  const nav = document.getElementById("nav");
+  const onScroll = () => nav.classList.toggle("scrolled", scrollY > 20);
+  addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+  // reveal on scroll + count-up numbers
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add("in"); io.unobserve(e.target);
+    const b = e.target.querySelector("[data-count]");
+    if (b) {
+      const end = +b.dataset.count, suf = b.dataset.suffix, t0 = performance.now();
+      const tick = (t) => { const p = Math.min(1, (t - t0) / 1200); b.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))) + suf; if (p < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    }
+  }), { threshold: 0.15 });
+  document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+  // animated mesh network in the hero: nodes drift, links form between neighbours, SOS pulses hop along links
+  const cv = document.getElementById("mesh"), ctx = cv.getContext("2d");
+  let W, H, nodes = [], pulses = [];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function size() {
+    const r = devicePixelRatio || 1; W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * r; cv.height = H * r; ctx.setTransform(r, 0, 0, r, 0, 0);
+    const n = Math.min(70, Math.round(W * H / 18000));
+    nodes = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25 }));
+  }
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    const R = 150;
+    for (const a of nodes) { a.x += a.vx; a.y += a.vy; if (a.x < 0 || a.x > W) a.vx *= -1; if (a.y < 0 || a.y > H) a.vy *= -1; }
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < R) { ctx.strokeStyle = `rgba(139,124,255,${(1 - d / R) * .35})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    }
+    for (const a of nodes) { ctx.fillStyle = "rgba(45,226,200,.75)"; ctx.beginPath(); ctx.arc(a.x, a.y, 2.2, 0, 7); ctx.fill(); }
+    if (Math.random() < .04 && nodes.length > 1) {
+      const a = nodes[(Math.random() * nodes.length) | 0];
+      const near = nodes.filter((b) => b !== a && Math.hypot(a.x - b.x, a.y - b.y) < R);
+      if (near.length) pulses.push({ a, b: near[(Math.random() * near.length) | 0], t: 0 });
+    }
+    pulses = pulses.filter((p) => (p.t += .02) < 1);
+    for (const p of pulses) {
+      const x = p.a.x + (p.b.x - p.a.x) * p.t, y = p.a.y + (p.b.y - p.a.y) * p.t;
+      ctx.fillStyle = "rgba(255,77,94,.95)"; ctx.shadowColor = "#FF4D5E"; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(x, y, 3.2, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+    }
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  addEventListener("resize", size); size(); frame();
+</script>
+</body>
+</html>
